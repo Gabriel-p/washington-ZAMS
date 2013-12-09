@@ -38,6 +38,7 @@ from functions.get_isochrones import get_isochrones as g_i
 import numpy as np
 from os import getcwd
 from os.path import join, getsize, realpath, dirname
+from os.path import expanduser
 import glob
 from scipy import stats
 import scipy as sp
@@ -182,11 +183,15 @@ def contour_levels(cluster, x, y, kde):
             
 
 # *********************************
+
+# Set 'home' dir.
+home = expanduser("~")
+
 # 1- Read data_output file to store names and parameters of each cluster:
 # sub dir, name, center, radius, number of members.
 
 # Location of the data_output file
-out_dir = '/home/gabriel/clusters/washington_KDE-Scott/'
+out_dir = home+'/clusters_out/washington_KDE-Scott/'
 data_out_file = out_dir+'data_output'
 
 sub_dirs, cl_names, centers, radius, members = [], [], [[],[]], [], []
@@ -210,7 +215,6 @@ with open(data_out_file, mode="r") as d_o_f:
 
 # Location of the data_input file
 main_dir = '/media/rest/Dropbox/GABRIEL/CARRERA/3-POS-DOC/trabajo/'
-#main_dir = '/media/sync/Dropbox/GABRIEL/CARRERA/3-POS-DOC/trabajo/'
 data_isos_file = main_dir+'codigo/clusters_data_isos.dat'
 
 extin, ages, metal, dist_mods = [], [], [], []
@@ -233,7 +237,7 @@ for cluster in cl_names:
 # 3- Read the photometric data file for each cluster.
 
 # Location of the photometric data file for each cluster.
-data_isos_file = main_dir+'data_all/cumulos-datos-fotometricos/'
+data_phot = main_dir+'data_all/cumulos-datos-fotometricos/'
 
 
 # Stores the CMD sequence obtained for each cluster.
@@ -251,9 +255,9 @@ for indx, sub_dir in enumerate(sub_dirs):
 #    if use_all_clusters:
         print sub_dir, cluster
         
-        filename = glob.glob(join(data_isos_file, sub_dir, cluster + '.*'))[0]
+        filename = glob.glob(join(data_phot, sub_dir, cluster + '.*'))[0]
         id_star, x_data, y_data, mag_data, e_mag, col1_data, e_col1 = \
-        gd.get_data(data_isos_file, sub_dir, filename)
+        gd.get_data(data_phot, sub_dir, filename)
         
         # Accept and reject stars based on their errors.
         bright_end, popt_mag, popt_umag, pol_mag, popt_col1, popt_ucol1, \
@@ -301,16 +305,16 @@ for indx, sub_dir in enumerate(sub_dirs):
         
         # figsize(x1, y1), GridSpec(y2, x2) --> To have square plots: x1/x2 = 
         # y1/y2 = 2.5 
-#        fig = plt.figure(figsize=(20, 25)) # create the top-level container
-#        gs1 = gridspec.GridSpec(10, 8)  # create a GridSpec object
-        fig = plt.figure(figsize=(25, 20)) # create the top-level container
-        gs1 = gridspec.GridSpec(8, 10)  # create a GridSpec object
+        fig = plt.figure(figsize=(20, 25)) # create the top-level container
+        gs1 = gridspec.GridSpec(10, 8)  # create a GridSpec object
+#        fig = plt.figure(figsize=(25, 20)) # create the top-level container
+#        gs1 = gridspec.GridSpec(8, 10)  # create a GridSpec object
         
         fig.suptitle('\n%s' % sub_dir+'/'+cluster, fontsize=30)
         
         # Field stars CMD (stars outside cluster's radius)
-#        ax1 = plt.subplot(gs1[1:5, 0:4])
-        ax1 = plt.subplot(gs1[1:7, 0:5])
+        ax1 = plt.subplot(gs1[1:5, 0:4])
+#        ax1 = plt.subplot(gs1[1:7, 0:5])
         #Set plot limits
         plt.xlim(col1_min, col1_max)
         plt.ylim(mag_min, mag_max)
@@ -343,18 +347,18 @@ for indx, sub_dir in enumerate(sub_dirs):
     
     
         # Cluster's stars CMD (stars inside cluster's radius)
-#        ax2 = plt.subplot(gs1[1:5, 4:8])
-        ax2 = plt.subplot(gs1[1:7, 5:10])
+        ax2 = plt.subplot(gs1[1:5, 4:8])
+#        ax2 = plt.subplot(gs1[1:7, 5:10])
         #Set plot limits
-#        plt.xlim(col1_min, col1_max)
-#        plt.ylim(mag_min, mag_max)
-        plt.xlim(-2., 4.)
-        plt.ylim(10., -4)
+        plt.xlim(col1_min, col1_max)
+        plt.ylim(mag_min, mag_max)
+#        plt.xlim(-2., 4.)
+#        plt.ylim(10., -4)
         #Set axis labels
-#        plt.xlabel(r'$C-T_1$', fontsize=26)
-#        plt.ylabel(r'$T_1$', fontsize=26)
-        plt.xlabel(r'$(C-T_1)_o$', fontsize=26)
-        plt.ylabel(r'$M_{T_1}$', fontsize=26)
+        plt.xlabel(r'$C-T_1$', fontsize=26)
+        plt.ylabel(r'$T_1$', fontsize=26)
+#        plt.xlabel(r'$(C-T_1)_o$', fontsize=26)
+#        plt.ylabel(r'$M_{T_1}$', fontsize=26)
         ax2.tick_params(axis='both', which='major', labelsize=24)
         # Set minor ticks
         ax2.minorticks_on()
@@ -373,13 +377,13 @@ for indx, sub_dir in enumerate(sub_dirs):
             stars_rjct_temp[0].append(star[5])
             stars_rjct_temp[1].append(star[3])
         # Get intrinsic color and magnitudes.
-        col_intrsc_r, mag_intrsc_r = intrsc_values(stars_rjct_temp[0],
-                                               stars_rjct_temp[1],\
-                                               cl_e_bv, cl_dmod)             
-#        plt.scatter(stars_rjct_temp[0], stars_rjct_temp[1], marker='x', c='k', 
-#                    s=60, lw=1.5, zorder=1)
-        plt.scatter(col_intrsc_r, mag_intrsc_r, marker='x', c='k', 
+#        col_intrsc_r, mag_intrsc_r = intrsc_values(stars_rjct_temp[0],
+#                                               stars_rjct_temp[1],\
+#                                               cl_e_bv, cl_dmod)             
+        plt.scatter(stars_rjct_temp[0], stars_rjct_temp[1], marker='x', c='k', 
                     s=60, lw=1.5, zorder=1)
+#        plt.scatter(col_intrsc_r, mag_intrsc_r, marker='x', c='k', 
+#                    s=60, lw=1.5, zorder=1)
         stars_acpt_temp = [[], []]
         for star in stars_in:
             stars_acpt_temp[0].append(star[5])
@@ -401,177 +405,177 @@ for indx, sub_dir in enumerate(sub_dirs):
                  bbox=dict(facecolor='white', alpha=0.5), fontsize=24)
                     
                     
-#        # Cluster's stars CMD of N_c stars (the approx number of member stars)
-#        # inside cluster's radius with the smallest decontamination index 
-#        # (most probable members).
-#        # Check if decont algorithm was applied.
-#        if not(flag_area_stronger):
-#            ax3 = plt.subplot(gs1[5:9, 0:4])
-#            #Set plot limits
-#            plt.xlim(col1_min, col1_max)
-#            plt.ylim(mag_min, mag_max)
-#            #Set axis labels
-#            plt.xlabel(r'$C-T_1$', fontsize=26)
-#            plt.ylabel(r'$T_1$', fontsize=26)
-#            ax3.tick_params(axis='both', which='major', labelsize=24)
-#            text = r'$r \leq R_{cl}\,|\,N_{c}=%d$' % len(most_prob_memb_avrg)
-#            plt.text(0.05, 0.93, text, transform = ax3.transAxes,
-#                     bbox=dict(facecolor='white', alpha=0.5), fontsize=26)
-#            # Set minor ticks
-#            ax3.minorticks_on()
-#            ax3.xaxis.set_major_locator(MultipleLocator(1.0))
-#            ax3.grid(b=True, which='major', color='gray', linestyle='--', lw=1)
-#            # This reversed colormap means higher prob stars will look redder.
-#            cm = plt.cm.get_cmap('RdYlBu_r')
-#            m_p_m_temp = [[], [], []]
-#            for star in most_prob_memb_avrg:
-#                m_p_m_temp[0].append(star[6])
-#                m_p_m_temp[1].append(star[4])
-#                m_p_m_temp[2].append(star[8])
-#            # Create new list with inverted values so higher prob stars are on top.
-#            m_p_m_temp_inv = [i[::-1] for i in m_p_m_temp]
-#            plt.scatter(m_p_m_temp_inv[0], m_p_m_temp_inv[1], marker='o', 
-#                        c=m_p_m_temp_inv[2], s=100, cmap=cm, lw=0.8, vmin=0, vmax=1,\
-#                        zorder=5)
-#            # If list is not empty.
-#            if m_p_m_temp_inv[1]:
-#                # Plot error bars at several mag values.
-#                mag_y = np.arange(int(min(m_p_m_temp_inv[1])+0.5), 
-#                                  int(max(m_p_m_temp_inv[1])+0.5) + 0.1)
-#                x_val = [min(3.9, max(col1_data)+0.2) - 0.4]*len(mag_y)
-#                plt.errorbar(x_val, mag_y, yerr=func(mag_y, *popt_mag), 
-#                             xerr=func(mag_y, *popt_col1), fmt='k.', lw=1.2, ms=0.,\
-#                             zorder=4)
-#            # Plot ZAMS.
-#            plt.plot(zams_iso[1], zams_iso[0], c='k', ls='--', lw=1.5)
-#            # Plot isochrone.
-#            plt.plot(iso_moved[1], iso_moved[0], 'k', lw=2.)
-#                   
-#    
-#
-#        # Now we plot the intrinsic CMD diagram along with the contour levels
-#        # and the ZAMS for each cluster.
-#        
-#        # Get intrinsic color and magnitudes. Use inverted lists so the values
-#        # that return are already ordered according to theri weights.
-#        col_intrsc, mag_intrsc = intrsc_values(m_p_m_temp_inv[0],
-#                                               m_p_m_temp_inv[1],\
-#                                               cl_e_bv, cl_dmod) 
-#                          
-#                          
-#        # Obtain new limits selected as to make the intrinsic CMD axis 1:1.
-#        col1_min, col1_max = min(col_intrsc)-0.2, max(col_intrsc)+0.2
-#        mag_min, mag_max = max(mag_intrsc)+1., min(mag_intrsc)-1.
-#        delta_x = col1_max - col1_min
-#        delta_y = mag_min - mag_max
-#        center_x = (col1_max + col1_min)/2.
-#        center_y = (mag_max + mag_min)/2.
-#        if delta_y >= delta_x:
-#            col1_min, col1_max = (center_x-delta_y/2.), (center_x+delta_y/2.)
-#        else:
-#            mag_max, mag_min = (center_y-delta_x/2.), (center_y+delta_x/2.)
-#        
-#        
-#        # Generate new stars located at the same positions of each star in the list
-#        # of most probable members. The number of new stars generated in each star
-#        # position is the weight assigned to that star times 10. We do this so
-#        # the KDE obtained below incorporates the information of the weights, ie:
-#        # the membership probabilities.
-#        col_intrsc_w = list(chain.from_iterable([i] * int(round(j* 10)) \
-#        for i, j in zip(col_intrsc, m_p_m_temp_inv[2])))
-#        mag_intrsc_w = list(chain.from_iterable([i] * int(round(j* 10)) \
-#        for i, j in zip(mag_intrsc, m_p_m_temp_inv[2])))
-#    
-#    
-#                    
-#        if not(flag_area_stronger):
-#            ax4 = plt.subplot(gs1[5:9, 4:8])
-#            #Set plot limits
-#            plt.xlim(col1_min, col1_max)
-#            plt.ylim(mag_min, mag_max)
-#            #Set axis labels
-#            plt.xlabel(r'$(C-T_1)_o$', fontsize=26)
-#            plt.ylabel(r'$M_{T_1}$', fontsize=26)
-#            ax4.tick_params(axis='both', which='major', labelsize=24)
-#            # Add text box
-#            text1 = r'$E_{(B-V)} = %0.2f}$' '\n' % cl_e_bv
-#            text2 = r'$Age = %0.3f}$' '\n' % cl_age
-#            text3 = r'$[Fe/H] = %0.2f}$' '\n' % cl_feh
-#            text4 = r'$(m-M)_o = %0.2f}$' % cl_dmod
-#            text = text1+text2+text3+text4
-#            plt.text(0.7, 0.83, text, transform = ax4.transAxes,
-#                     bbox=dict(facecolor='white', alpha=0.5), fontsize=24)
-#            # Set minor ticks
-#            ax4.minorticks_on()
-#            ax4.xaxis.set_major_locator(MultipleLocator(1.0))
-#            ax4.yaxis.set_major_locator(MultipleLocator(1.0))
-#            ax4.grid(b=True, which='major', color='gray', linestyle='--', lw=1)
-#            # This reversed colormap means higher prob stars will look redder.
-#            cm = plt.cm.get_cmap('RdYlBu_r')
-#            plt.scatter(col_intrsc, mag_intrsc, marker='o', c=m_p_m_temp_inv[2],
-#                        s=100, cmap=cm, lw=0.8, vmin=0, vmax=1, zorder=2)
-#    
-#            # Get KDE for CMD intrinsic position of most probable members.
-#            x, y = np.mgrid[col1_min:col1_max:100j, mag_min:mag_max:100j]
-#            positions = np.vstack([x.ravel(), y.ravel()])
-#            values = np.vstack([col_intrsc_w, mag_intrsc_w])
-#            # The results are HEAVILY dependant on the bandwidth used here.
-#            # See: http://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.gaussian_kde.html
-#            kernel = stats.gaussian_kde(values, bw_method = None)
-#            kde = np.reshape(kernel(positions).T, x.shape)
-#            
-#            # Call the function that returns the sequence determined by the two
-#            # points further from each other in each contour level.
-#            sequence = contour_levels(cluster, x, y, kde)
-#    
-#            # Obtain and plot the sequence's fitting polinome.
-#            poli_order = 3 # Order of the polynome.
-#            poli = np.polyfit(sequence[1], sequence[0], poli_order)
-#            y_pol = np.linspace(min(sequence[1]), max(sequence[1]), 50)
-#            p = np.poly1d(poli)
-#            x_pol = [p(i) for i in y_pol]
-#            plt.plot(x_pol, y_pol, c='k', lw=2, zorder=6)
-#            
-#            # Write data to output file.
-#            out_file = join(out_dir+'fitted_zams'+'/'+cluster+'_ZAMS.dat')
-#            name = [sub_dir+'/'+cluster]*len(x_pol)
-#            e_bv = [str(cl_e_bv)]*len(x_pol)
-#            age = [str(cl_age)]*len(x_pol)
-#            feh = [str(cl_feh)]*len(x_pol)
-#            dmod = [str(cl_dmod)]*len(x_pol)
-#            line = zip(*[name, ['%.2f' % i for i in x_pol],
-#                         ['%.2f' % i for i in y_pol], e_bv, age, feh, dmod])
-#            with open(out_file, 'w') as f_out:
-#                f_out.write("#Name x_zams y_zams E(B-V) Age (Gyr) [Fe/H] (m-M)o\n")
-#                for item in line:
-#                    f_out.write('{:<10} {:>10} {:>10} {:>10} {:>10} {:>10} {:>10}'.format(*item))
-#                    f_out.write('\n')
+        # Cluster's stars CMD of N_c stars (the approx number of member stars)
+        # inside cluster's radius with the smallest decontamination index 
+        # (most probable members).
+        # Check if decont algorithm was applied.
+        if not(flag_area_stronger):
+            ax3 = plt.subplot(gs1[5:9, 0:4])
+            #Set plot limits
+            plt.xlim(col1_min, col1_max)
+            plt.ylim(mag_min, mag_max)
+            #Set axis labels
+            plt.xlabel(r'$C-T_1$', fontsize=26)
+            plt.ylabel(r'$T_1$', fontsize=26)
+            ax3.tick_params(axis='both', which='major', labelsize=24)
+            text = r'$r \leq R_{cl}\,|\,N_{c}=%d$' % len(most_prob_memb_avrg)
+            plt.text(0.05, 0.93, text, transform = ax3.transAxes,
+                     bbox=dict(facecolor='white', alpha=0.5), fontsize=26)
+            # Set minor ticks
+            ax3.minorticks_on()
+            ax3.xaxis.set_major_locator(MultipleLocator(1.0))
+            ax3.grid(b=True, which='major', color='gray', linestyle='--', lw=1)
+            # This reversed colormap means higher prob stars will look redder.
+            cm = plt.cm.get_cmap('RdYlBu_r')
+            m_p_m_temp = [[], [], []]
+            for star in most_prob_memb_avrg:
+                m_p_m_temp[0].append(star[6])
+                m_p_m_temp[1].append(star[4])
+                m_p_m_temp[2].append(star[8])
+            # Create new list with inverted values so higher prob stars are on top.
+            m_p_m_temp_inv = [i[::-1] for i in m_p_m_temp]
+            plt.scatter(m_p_m_temp_inv[0], m_p_m_temp_inv[1], marker='o', 
+                        c=m_p_m_temp_inv[2], s=100, cmap=cm, lw=0.8, vmin=0, vmax=1,\
+                        zorder=5)
+            # If list is not empty.
+            if m_p_m_temp_inv[1]:
+                # Plot error bars at several mag values.
+                mag_y = np.arange(int(min(m_p_m_temp_inv[1])+0.5), 
+                                  int(max(m_p_m_temp_inv[1])+0.5) + 0.1)
+                x_val = [min(3.9, max(col1_data)+0.2) - 0.4]*len(mag_y)
+                plt.errorbar(x_val, mag_y, yerr=func(mag_y, *popt_mag), 
+                             xerr=func(mag_y, *popt_col1), fmt='k.', lw=1.2, ms=0.,\
+                             zorder=4)
+            # Plot ZAMS.
+            plt.plot(zams_iso[1], zams_iso[0], c='k', ls='--', lw=1.5)
+            # Plot isochrone.
+            plt.plot(iso_moved[1], iso_moved[0], 'k', lw=2.)
+                   
+    
+
+        # Now we plot the intrinsic CMD diagram along with the contour levels
+        # and the ZAMS for each cluster.
+        
+        # Get intrinsic color and magnitudes. Use inverted lists so the values
+        # that return are already ordered according to theri weights.
+        col_intrsc, mag_intrsc = intrsc_values(m_p_m_temp_inv[0],
+                                               m_p_m_temp_inv[1],\
+                                               cl_e_bv, cl_dmod) 
+                          
+                          
+        # Obtain new limits selected as to make the intrinsic CMD axis 1:1.
+        col1_min, col1_max = min(col_intrsc)-0.2, max(col_intrsc)+0.2
+        mag_min, mag_max = max(mag_intrsc)+1., min(mag_intrsc)-1.
+        delta_x = col1_max - col1_min
+        delta_y = mag_min - mag_max
+        center_x = (col1_max + col1_min)/2.
+        center_y = (mag_max + mag_min)/2.
+        if delta_y >= delta_x:
+            col1_min, col1_max = (center_x-delta_y/2.), (center_x+delta_y/2.)
+        else:
+            mag_max, mag_min = (center_y-delta_x/2.), (center_y+delta_x/2.)
+        
+        
+        # Generate new stars located at the same positions of each star in the list
+        # of most probable members. The number of new stars generated in each star
+        # position is the weight assigned to that star times 10. We do this so
+        # the KDE obtained below incorporates the information of the weights, ie:
+        # the membership probabilities.
+        col_intrsc_w = list(chain.from_iterable([i] * int(round(j* 10)) \
+        for i, j in zip(col_intrsc, m_p_m_temp_inv[2])))
+        mag_intrsc_w = list(chain.from_iterable([i] * int(round(j* 10)) \
+        for i, j in zip(mag_intrsc, m_p_m_temp_inv[2])))
+    
+    
+                    
+        if not(flag_area_stronger):
+            ax4 = plt.subplot(gs1[5:9, 4:8])
+            #Set plot limits
+            plt.xlim(col1_min, col1_max)
+            plt.ylim(mag_min, mag_max)
+            #Set axis labels
+            plt.xlabel(r'$(C-T_1)_o$', fontsize=26)
+            plt.ylabel(r'$M_{T_1}$', fontsize=26)
+            ax4.tick_params(axis='both', which='major', labelsize=24)
+            # Add text box
+            text1 = r'$E_{(B-V)} = %0.2f}$' '\n' % cl_e_bv
+            text2 = r'$Age = %0.3f}$' '\n' % cl_age
+            text3 = r'$[Fe/H] = %0.2f}$' '\n' % cl_feh
+            text4 = r'$(m-M)_o = %0.2f}$' % cl_dmod
+            text = text1+text2+text3+text4
+            plt.text(0.7, 0.83, text, transform = ax4.transAxes,
+                     bbox=dict(facecolor='white', alpha=0.5), fontsize=24)
+            # Set minor ticks
+            ax4.minorticks_on()
+            ax4.xaxis.set_major_locator(MultipleLocator(1.0))
+            ax4.yaxis.set_major_locator(MultipleLocator(1.0))
+            ax4.grid(b=True, which='major', color='gray', linestyle='--', lw=1)
+            # This reversed colormap means higher prob stars will look redder.
+            cm = plt.cm.get_cmap('RdYlBu_r')
+            plt.scatter(col_intrsc, mag_intrsc, marker='o', c=m_p_m_temp_inv[2],
+                        s=100, cmap=cm, lw=0.8, vmin=0, vmax=1, zorder=2)
+    
+            # Get KDE for CMD intrinsic position of most probable members.
+            x, y = np.mgrid[col1_min:col1_max:100j, mag_min:mag_max:100j]
+            positions = np.vstack([x.ravel(), y.ravel()])
+            values = np.vstack([col_intrsc_w, mag_intrsc_w])
+            # The results are HEAVILY dependant on the bandwidth used here.
+            # See: http://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.gaussian_kde.html
+            kernel = stats.gaussian_kde(values, bw_method = None)
+            kde = np.reshape(kernel(positions).T, x.shape)
+            
+            # Call the function that returns the sequence determined by the two
+            # points further from each other in each contour level.
+            sequence = contour_levels(cluster, x, y, kde)
+    
+            # Obtain and plot the sequence's fitting polinome.
+            poli_order = 3 # Order of the polynome.
+            poli = np.polyfit(sequence[1], sequence[0], poli_order)
+            y_pol = np.linspace(min(sequence[1]), max(sequence[1]), 50)
+            p = np.poly1d(poli)
+            x_pol = [p(i) for i in y_pol]
+            plt.plot(x_pol, y_pol, c='k', lw=2, zorder=6)
+            
+            # Write data to output file.
+            out_file = join(out_dir+'fitted_zams'+'/'+cluster+'_ZAMS.dat')
+            name = [sub_dir+'/'+cluster]*len(x_pol)
+            e_bv = [str(cl_e_bv)]*len(x_pol)
+            age = [str(cl_age)]*len(x_pol)
+            feh = [str(cl_feh)]*len(x_pol)
+            dmod = [str(cl_dmod)]*len(x_pol)
+            line = zip(*[name, ['%.2f' % i for i in x_pol],
+                         ['%.2f' % i for i in y_pol], e_bv, age, feh, dmod])
+            with open(out_file, 'w') as f_out:
+                f_out.write("#Name x_zams y_zams E(B-V) Age (Gyr) [Fe/H] (m-M)o\n")
+                for item in line:
+                    f_out.write('{:<10} {:>10} {:>10} {:>10} {:>10} {:>10} {:>10}'.format(*item))
+                    f_out.write('\n')
     
      
         fig.tight_layout()
         # Generate output file for each data file.
-#        plt.savefig(join(out_dir+'fitted_zams'+'/'+cluster+'_ZAMS.png'), dpi=150)
-        plt.savefig(join(out_dir+'fitted_zams/ruben'+'/'+cluster+'_ruben.png'), dpi=150)
+        plt.savefig(join(out_dir+'fitted_zams'+'/'+cluster+'_ZAMS.png'), dpi=150)
+#        plt.savefig(join(out_dir+'fitted_zams/ruben'+'/'+cluster+'_ruben.png'), dpi=150)
         # Close to release memory.
         plt.clf()
         plt.close()
 
         
-#        # Store the sequence obtained with this cluster in final list.
-#        final_zams.append(sequence)
-#        # Also store the parameters associated with this cluster.
-#        final_zams_params.append([cluster, cl_e_bv, cl_age, cl_feh, cl_dmod])
+        # Store the sequence obtained with this cluster in final list.
+        final_zams.append(sequence)
+        # Also store the parameters associated with this cluster.
+        final_zams_params.append([cluster, cl_e_bv, cl_age, cl_feh, cl_dmod])
 
 
 
-print 'stop'
-raw_input()
+#print 'stop'
+#raw_input()
 
 # Second part of the code.
 
 # Get ZAMS.
-file_path = join(main_dir, 'codigo/zams_4_isos.data')
-data = np.loadtxt(file_path, unpack=True)
+zams_file = 'codigo/zams_4_isos.data'
+data = np.loadtxt(zams_file, unpack=True)
 # Convert z to [Fe/H] using the y=A+B*log10(x) zunzun.com function and the
 # x,y values:
 #   z    [Fe/H]
