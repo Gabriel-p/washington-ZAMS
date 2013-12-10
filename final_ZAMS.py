@@ -267,6 +267,20 @@ def get_zams():
     return zam_met, metals_z, metals_feh
 
 
+
+def write_seq_file(out_dir, cluster, x_pol, y_pol):
+    '''
+    Write interpolated sequence to output file.
+    '''
+    out_file = join(out_dir+'fitted_zams'+'/'+cluster+'_ZAMS.dat')
+    line = zip(*[['%.2f' % i for i in x_pol], ['%.2f' % i for i in y_pol]])
+    with open(out_file, 'w') as f_out:
+        f_out.write("#x_zams y_zams\n")
+        for item in line:
+            f_out.write('{:<7} {:>5}'.format(*item))
+            f_out.write('\n')
+
+
 # **********************************************************************
 # End of functions.
 
@@ -458,21 +472,7 @@ data_all/cumulos-datos-fotometricos/'
 
         
             # Write interpolated sequence to output file.
-            out_file = join(out_dir+'fitted_zams'+'/'+cluster+'_ZAMS.dat')
-            name = [sub_dir+'/'+cluster]*len(x_pol)
-            e_bv = [str(cl_e_bv)]*len(x_pol)
-            age = [str(cl_age)]*len(x_pol)
-            feh = [str(cl_feh)]*len(x_pol)
-            dmod = [str(cl_dmod)]*len(x_pol)
-            line = zip(*[name, ['%.2f' % i for i in x_pol],
-                         ['%.2f' % i for i in y_pol], e_bv, age, feh, dmod])
-            with open(out_file, 'w') as f_out:
-                f_out.write("#Name x_zams y_zams E(B-V) Age (Gyr) [Fe/H]\
-(m-M)o\n")
-                for item in line:
-                    f_out.write('{:<10} {:>10} {:>10} {:>10} {:>10} {:>10} \
-{:>10}'.format(*item))
-                    f_out.write('\n')        
+            write_seq_file(out_dir, cluster, x_pol, y_pol)
         
         
             # Call function to create CMDs for this cluster.
