@@ -118,7 +118,7 @@ def contour_levels(fine_tune, cluster, x, y, kde):
     
     f_t_ylim = [[0.5, 3.2]]
     
-    f_t_level = [[-0.1, -1]]
+    f_t_level = [[]]
     
     fine_tune_list = [f_t_names, f_t_range, f_t_ylim, f_t_level]
 
@@ -131,7 +131,7 @@ def contour_levels(fine_tune, cluster, x, y, kde):
         else:
             manual_levels = np.array([])
         y_min, y_max = fine_tune_list[2][indx][0], fine_tune_list[2][indx][1]
-        lev_min, lev_num = fine_tune_list[3][indx]
+        lev_min, lev_num = fine_tune_list[3][indx] if fine_tune_list[3][indx] else [-0.1, -1]
     else:
         manual_levels = np.array([])
         y_min, y_max = -10., 10.
