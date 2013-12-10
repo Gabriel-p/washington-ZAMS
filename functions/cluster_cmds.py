@@ -198,11 +198,11 @@ def make_cluster_cmds(sub_dir, cluster, col1_data, mag_data, stars_out_rjct,
     # This reversed colormap means higher prob stars will look redder.
     cm = plt.cm.get_cmap('RdYlBu_r')
     # Plor contour levels.
-    if fine_tune == True:
+    if fine_tune == True and manual_levels.any():
         CS = plt.contour(x, y, kde, manual_levels)
     else:
         CS = plt.contour(x, y, kde)
-    plt.clabel(CS, fontsize=9, inline=1)
+    plt.clabel(CS, fontsize=11, inline=1)
     # Invert list so stars with higher probs will be on top.
     temp_list = [col_intrsc, mag_intrsc, memb_above_lim[2]]
     temp_inv = [i[::-1] for i in temp_list]
