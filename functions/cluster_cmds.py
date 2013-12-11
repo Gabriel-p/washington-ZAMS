@@ -210,9 +210,9 @@ def make_cluster_cmds(sub_dir, cluster, col1_data, mag_data, stars_out_rjct,
     plt.scatter(temp_inv[0], temp_inv[1], marker='o', c=temp_inv[2],
                 s=100, cmap=cm, lw=0.8, vmin=v_min, vmax=v_max, zorder=2)
     # Plot ZAMS envelope.
-    a = [1, 3]
-    for j in range(2):
-        plt.plot(zam_met[a[j]][3], zam_met[a[j]][2], c='g', ls='--') 
+    a = [0, -1]
+    for j in a:
+        plt.plot(zam_met[j][3], zam_met[j][2], c='g', ls='--') 
     # Plot polynomial fit only if list is not empty.
     if x_pol:
         plt.plot(x_pol, y_pol, c='k', lw=2, zorder=6)  
