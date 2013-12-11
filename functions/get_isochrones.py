@@ -100,9 +100,17 @@ def get_isochrones(mypath, clust_name):
         for item in isochrone[1]:
             iso_moved[1].append(item + 1.97*cl_e_bv)
             
+        # Intrinsic isochrone.
+        iso_intrsc = [[], []]
+        for item in isochrone[0]:
+            iso_intrsc[0].append(item)
+        for item in isochrone[1]:
+            iso_intrsc[1].append(item)
+            
     else:
         # If cluster was NOT found in list.
         iso_moved = [[0.], [0.]]
+        iso_intrsc = [[0.], [0.]]
         # Set ZAMS values.
         cl_e_bv, cl_age, cl_feh, cl_dmod = 0.0, 0.0, 0.019, 18.90
 
@@ -135,4 +143,4 @@ def get_isochrones(mypath, clust_name):
         zams_iso[1].append(item + 1.97*cl_e_bv)
             
 
-    return cl_e_bv, cl_age, cl_feh, cl_dmod, iso_moved, zams_iso   
+    return cl_e_bv, cl_age, cl_feh, cl_dmod, iso_moved, zams_iso, iso_intrsc
