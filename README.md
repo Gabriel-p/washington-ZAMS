@@ -18,23 +18,23 @@ Outline
 4. Ask if fine tuning parameters should be used.
 5. Ask if all clusters should be processed or only those inside the `manual_accept` list.
 6. Apply these processes to each cluster:
- 6.1. Read the photometric data file for each cluster.
- 6.2. Classify stars as in or out of cluster boundaries.
- 6.3. Read `clusters_data_isos.dat` file to store fitted parameters for each cluster.
- 6.4. Read `most_prob_memb` file for each cluster to store the probabilities
+   6.1. Read the photometric data file for each cluster.
+   6.2. Classify stars as in or out of cluster boundaries.
+   6.3. Read `clusters_data_isos.dat` file to store fitted parameters for each cluster.
+   6.4. Read `most_prob_memb` file for each cluster to store the probabilities
 and CMD coordinates assigned to each star.
- 6.5. Calculate `mu` value if selected to be used. This is the mean of a Gaussian
+   6.5. Calculate `mu` value if selected to be used. This is the mean of a Gaussian
  fit of all probabilities assigned to stars inside the cluster region.
- 6.6. Store CMD coordinates and probabilities only for stars above the threshold.
- 6.7. Obtain intrinsic position of stars above the probability threshold.
- 6.8. Obtain CMD limits based on these intrinsic positions.
- 6.9. Assign weights to these corrected stars according to the membership probabilities
+   6.6. Store CMD coordinates and probabilities only for stars above the threshold.
+   6.7. Obtain intrinsic position of stars above the probability threshold.
+   6.8. Obtain CMD limits based on these intrinsic positions.
+   6.9. Assign weights to these corrected stars according to the membership probabilities
  they've been assigned.
- 6.10. Obtain the (weighted) KDE for these (weighted) stars.
- 6.11. Generate a fiducial sequence making use of the KDE contours' extreme points.
- 6.12. Interpolate this sequence to obtain the final sequence.
- 6.13. Write final interpolated sequence to data file.
- 6.14. Create out `.png` file for this cluster.
+   6.10. Obtain the (weighted) KDE for these (weighted) stars.
+   6.11. Generate a fiducial sequence making use of the KDE contours' extreme points.
+   6.12. Interpolate this sequence to obtain the final sequence.
+   6.13. Write final interpolated sequence to data file.
+   6.14. Create out `.png` file for this cluster.
 7. Plot interpolated sequences and final ZAMS for each metallicity interval defined.
 
 Data I/O
