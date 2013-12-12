@@ -102,7 +102,7 @@ def make_cluster_cmds(sub_dir, cluster, col1_data, mag_data, stars_out_rjct,
     ax2.grid(b=True, which='major', color='gray', linestyle='--', lw=1)
     # Calculate total number of stars whitin cluster's radius.
     tot_stars = len(stars_in_rjct) + len(stars_in)
-    plt.text(0.68, 0.93, r'$r \leq R_{cl}\,|\,N=%d$' % tot_stars, 
+    plt.text(0.68, 0.93, r'$r \leq R_{cl}\,|\,N_{c}=%d$' % tot_stars, 
              transform = ax2.transAxes, 
              bbox=dict(facecolor='white', alpha=0.5), fontsize=26)
     # Plot stars.
@@ -116,10 +116,6 @@ def make_cluster_cmds(sub_dir, cluster, col1_data, mag_data, stars_out_rjct,
     for star in stars_in:
         stars_acpt_temp[0].append(star[5])
         stars_acpt_temp[1].append(star[3])
-    # Get intrinsic color and magnitudes.
-#    col_intrsc_a, mag_intrsc_a = intrsc_values(stars_acpt_temp[0],
-#                                           stars_acpt_temp[1],\
-#                                           cl_e_bv, cl_dmod)  
     sz_pt = 10 if (len(stars_in_rjct)+len(stars_in)) > 1000 else 20
     plt.scatter(stars_acpt_temp[0], stars_acpt_temp[1], marker='o', c='k', 
                 s=sz_pt, zorder=2)
