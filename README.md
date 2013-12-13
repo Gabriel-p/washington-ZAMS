@@ -69,10 +69,11 @@ Needs several files as input to run:
 
 1. Data file for each cluster containing the interpolated sequence traced
 through its most probable members.
-2. `.png` file for each cluster with 4 `CMD`s: all stars outside cluster region,
+2. Several `final_ZAMS_*.png` files, one for each metallicty interval defined.
+3. `.png` file for each cluster with 4 `CMD`s: all stars outside cluster region,
 stars inside cluster region, stars inside colored according to its probabilities
 and only most probable members and the sequence they trace.
-3. Several `final_ZAMS_*.png` files, one for each metallicty interval defined.
+
 
 
 Packages
