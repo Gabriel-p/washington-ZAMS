@@ -85,8 +85,6 @@ def get_isochrones(mypath, clust_name):
     
         # Get age in isochrone file closest to cluster's age.
         idx = (np.abs(np.array(ages)-cl_age)).argmin()
-        # Update age variable with the closest value found.
-        cl_age = min(ages, key=lambda x:np.abs(x-cl_age))
         
         # Isolate isochrone for this cluster.
         isochrone = [[], []]
