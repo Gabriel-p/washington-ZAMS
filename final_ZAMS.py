@@ -470,7 +470,7 @@ for indx,m_rang in enumerate(metal_ranges):
         single_seq_list = [[i for v in r for i in v] for r in \
         zip(*final_zams_poli_s)]
         
-        # Generate interpolated final ZAMS uding the clusters sequences.
+        # Generate interpolated final ZAMS using the clusters sequences.
         pol_ord = 3
         poli_zams = np.polyfit(single_seq_list[1], single_seq_list[0], pol_ord)
         zy_pol = np.linspace(min(single_seq_list[1]),
