@@ -14,7 +14,7 @@ from matplotlib.ticker import MultipleLocator
 
 def make_final_plot(out_dir, fig_num, metal_min, metal_max, zam_met, metals_z,
                     metals_feh, ages_s, names_s, names_feh_s, final_zams_poli_s,
-                    zx_pol, zy_pol, clust_isoch):
+                    zx_pol, zy_pol, clust_isoch, clust_isoch_params):
     '''
     Print the final plot with all the sequences superimposed and fitted by a
     polynomial.
@@ -127,19 +127,16 @@ def make_final_plot(out_dir, fig_num, metal_min, metal_max, zam_met, metals_z,
     ax3.grid(b=True, which='both', color='gray', linestyle='--', lw=1)
     ax3.tick_params(axis='both', which='major', labelsize=26)
     # Plot fitting polinome for all sequences (final ZAMS).
-    plt.plot(zx_pol, zy_pol, c='r', lw=2.5, label='ZAMS')
-    # Plot ZAMS envelope.
-    k = 1 if min_met == max_met else 2
-    ls_lst = ['--', '-.']
-    for j in range(k):
-        text1 = 'z = %0.3f' '\n' % metals_z[a[j]]
-        text2 = '[Fe/H] = %0.2f' % metals_feh[a[j]]
-        text = text1+text2
-        plt.plot(zam_met[a[j]][3], zam_met[a[j]][2], c='k', ls=ls_lst[j],
-                 lw=2., label=text)
-    # Plot isochrones sequences.
-    for isoch in clust_isoch:
-        plt.plot(isoch[0], isoch[1])
+    plt.plot(zx_pol, zy_pol, c='k', lw=2.5, label='ZAMS')
+    # Plot each cluster's isochrone.
+#    cmap = plt.get_cmap('rainbow')
+    for indx,isoch in enumerate(clust_isoch):
+        l, = plt.plot(isoch[0], isoch[1], label=clust_isoch_params[indx][0],
+                      lw=2.)
+        pos = [isoch[0][1]+0.3, isoch[1][0]]
+        plt.text(pos[0], pos[1], str(int(clust_isoch_params[indx][2]*1000.))+' Myr',
+                 size=16, rotation=0, ha="center",\
+                 va="center", bbox=dict(ec='1',fc='1', alpha=0.6))        
     # Add legend.
     leg = ax3.legend(loc="upper right", markerscale=1.5, scatterpoints=2,
                fontsize=18)

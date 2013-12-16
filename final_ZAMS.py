@@ -34,18 +34,13 @@ from scipy.stats import norm
 
 
 # This list stores the clusters selected manually.
-#zams_manual_accept = ['BSDL654', 'BSDL761', 'BSDL779', 'L72']
 zams_manual_accept = [\
 'BSDL654', 'BSDL761', 'BSDL779', 'C11', 'CZ26', 'CZ30', 'HAF11', \
 'H88-188', 'H88-333', 'HS38', 'HS130', 'KMHK128', 'KMHK1702', \
 'L45', 'L49', 'L50', 'L72', 'L114', 'LW469', \
 'NGC2236', 'NGC2324', 'RUP1', 'SL72', 'TO1']
                    
-iso_manual_accept = ['L72']
-
-                  
-                  
-# Thess lists hold the fine tuning parameters for those clusters that need it
+# These lists hold the fine tuning parameters for those clusters that need it
 # to accurately trace its zero age main sequences.
 
 # Range where the sequences will be interpolated.
@@ -69,16 +64,18 @@ f_t_range = [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [],
 fine_tune_zams = [f_t_ylim, f_t_level, f_t_range]
     
     
+iso_manual_accept = ['L72', 'NGC294']
+
 # These lists hold the names and tuning parameters for those clusters used to
 # trace isochrones.
 
 isoch_ylim = [\
-[-4., -1.]]
+[-4., -1.], [-0.8, 1.4]]
 
 isoch_level = [\
-[]]
+[], []]
 
-isoch_range = [[]]
+isoch_range = [[], []]
 
 fine_tune_isoch = [isoch_ylim, isoch_level, isoch_range]
     
@@ -670,7 +667,7 @@ for indx_met,m_rang in enumerate(metal_ranges):
         # Call function to generate plot for the metallicity range.
         m_f_p(out_dir, indx_met, m_rang[0], m_rang[1], zam_met, metals_z,
               metals_feh, ages_s, names_s, names_feh_s, final_zams_poli_s,
-              zx_pol, zy_pol, clust_isoch)
+              zx_pol, zy_pol, clust_isoch, clust_isoch_params)
     else:
         print 'Skipped %d' % indx_met
         
