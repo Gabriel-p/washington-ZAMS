@@ -52,7 +52,7 @@ def intrsc_values(col_obsrv, mag_obsrv, e_bv, dist_mod):
     return col_intrsc, mag_intrsc
 
 
-# This list store the clusters accepted manually.
+# This list stores the clusters accepted manually.
 #manual_accept = ['BSDL654', 'BSDL761', 'BSDL779', 'C11', 'CZ26', 'CZ30',
 #                   'H88-188', 'H88-333', 'HAF11', 'HS38', 'HS130',
 #                   'KMHK1702', 'L49', 'L50', 'L114', 'LW469', 'NGC2236',
