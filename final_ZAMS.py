@@ -33,26 +33,7 @@ from scipy.stats import norm
 
 
 
-def intrsc_values(col_obsrv, mag_obsrv, e_bv, dist_mod):
-    '''
-    Takes *observed* color and magnitude lists and returns corrected or
-    intrinsic lists. Depends on the system selected/used.
-    '''
-    # For Washington system.
-    #
-    # E(C-T1) = 1.97*E(B-V) = (C-T1) - (C-T)o
-    # M_T1 = T1 + 0.58*E(B-V) - (m-M)o - 3.2*E(B-V)
-    #
-    # (C-T1)o = (C-T1) - 1.97*E(B-V)
-    # M_T1 = T1 + 0.58*E(B-V) - (m-M)o - 3.2*E(B-V)
-    #
-    col_intrsc = np.array(col_obsrv) - 1.97*e_bv
-    mag_intrsc = np.array(mag_obsrv) + 0.58*e_bv - dist_mod - 3.2*e_bv
-    
-    return col_intrsc, mag_intrsc
-
-
-# This list stores the clusters accepted manually.
+# This list stores the clusters selected manually.
 #manual_accept = ['BSDL654', 'BSDL761', 'BSDL779', 'C11', 'CZ26', 'CZ30',
 #                   'H88-188', 'H88-333', 'HAF11', 'HS38', 'HS130',
 #                   'KMHK1702', 'L49', 'L50', 'L114', 'LW469', 'NGC2236',
@@ -61,41 +42,74 @@ def intrsc_values(col_obsrv, mag_obsrv, e_bv, dist_mod):
 manual_accept = ['BSDL654', 'BSDL761', 'BSDL779']
                    
 
+
+# This list holds the names and tuning parameters for those clusters that
+# need it.
+# 1st sub-list: Names of clusters
+# 2nd: values to generate levels with np.arange()
+# 3rd: y_min and y_max. Range where sequence will be interpolated.
+# 4th: min level value to accept and min level number to accept.
+f_t_names = [\
+'BSDL654', 'BSDL761', 'C11', 'CZ26', 'CZ30', 'HAF11', \
+'H88-188', 'H88-333', 'HS38', 'HS130', 'KMHK128', 'KMHK1702', \
+'L45', 'L49', 'L50', 'L72', 'L114', 'LW469', \
+'NGC2236', 'NGC2324', 'RUP1', 'SL72', 'TO1']
+
+f_t_ylim = [\
+[0.5, 3.2], [1., 2.6], [1.4, 4.], [3.2, 5.2], [3., 4.8], [2.2, 5.], \
+[1.8, 2.7], [2., 4.], [2., 3.], [1., 3.4], [2.4, 3.6], [2., 4.], \
+[0., 1.2], [-0.3, 1.2], [0.8, 1.8], [-1., 0.8], [1.6, 2.8], [2., 3.2], \
+[2., 4.5], [1.8, 5.], [2., 6.4], [1., 2.8], [2.8, 4.4]]
+
+f_t_level = [\
+[], [], [-0.1, 0.], [], [], [-0.1, 1], \
+[], [], [], [-0.1, 0.], [-0.1, 2], [-0.1, -1.], \
+[], [-0.1, 0.], [-0.1, 1], [], [], [-0.1, 0.], \
+[-0.1, 1.], [], [-0.1, 2.], [], []]
+
+f_t_range = [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [],
+             [], [], [], [], [], [], []]
+
+fine_tune_list = [f_t_names, f_t_range, f_t_ylim, f_t_level]
+    
+    
+# This list holds the names and tuning parameters for those clusters used to
+# trace isochrones.
+# 1st sub-list: Names of clusters
+# 2nd: values to generate levels with np.arange()
+# 3rd: y_min and y_max. Range where sequence will be interpolated.
+# 4th: min level value to accept and min level number to accept.
+isoch_names = [\
+'BSDL654', 'BSDL761', 'C11', 'CZ26', 'CZ30', 'HAF11', \
+'H88-188', 'H88-333', 'HS38', 'HS130', 'KMHK128', 'KMHK1702', \
+'L45', 'L49', 'L50', 'L114', 'LW469', 'NGC2236', \
+'NGC2324', 'RUP1', 'SL72', 'TO1']
+
+isoch_ylim = [\
+[0.5, 3.2], [1., 2.6], [1.4, 4.], [3.2, 5.2], [3., 4.8], [2.2, 5.], \
+[1.8, 2.7], [2., 4.], [2., 3.], [1., 3.4], [2.4, 3.6], [2., 4.], \
+[0., 1.2], [-0.3, 1.2], [0.8, 1.8], [1.6, 2.8], [2., 3.2], [2., 4.5], \
+[1.8, 5.], [2., 6.4], [1., 2.8], [2.8, 4.4]]
+
+isoch_level = [\
+[], [], [-0.1, 0.], [], [], [-0.1, 1], \
+[], [], [], [-0.1, 0.], [-0.1, 2], [-0.1, -1.], \
+[], [-0.1, 0.], [-0.1, 1], [], [-0.1, 0.], [-0.1, 1.], \
+[], [-0.1, 2.], [], []]
+
+isoch_range = [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [],
+             [], [], [], [], [], []]
+
+isoch_tune_list = [isoch_names, isoch_range, isoch_ylim, isoch_level]
+    
+    
+    
 def clust_main_seq(fine_tune, cluster, x, y, kde):
     '''This is the central function. It generates the countour plots around the
     cluster members. The extreme points of these contour levels are used to trace
     the ZAMS fiducial line for each cluster.
     '''
     
-    # This list holds the names and tuning parameters for those clusters that
-    # need it.
-    # 1st sub-list: Names of clusters
-    # 2nd: values to generate levels with np.arange()
-    # 3rd: y_min and y_max. Range where sequence will be interpolated.
-    # 4th: min level value to accept and min level number to accept.
-    f_t_names = [\
-    'BSDL654', 'BSDL761', 'C11', 'CZ26', 'CZ30', 'HAF11', \
-    'H88-188', 'H88-333', 'HS38', 'HS130', 'KMHK128', 'KMHK1702', \
-    'L45', 'L49', 'L50', 'L114', 'LW469', 'NGC2236', \
-    'NGC2324', 'RUP1', 'SL72', 'TO1']
-    
-    f_t_ylim = [\
-    [0.5, 3.2], [1., 2.6], [1.4, 4.], [3.2, 5.2], [3., 4.8], [2.2, 5.], \
-    [1.8, 2.7], [2., 4.], [2., 3.], [1., 3.4], [2.4, 3.6], [2., 4.], \
-    [0., 1.2], [-0.3, 1.2], [0.8, 1.8], [1.6, 2.8], [2., 3.2], [2., 4.5], \
-    [1.8, 5.], [2., 6.4], [1., 2.8], [2.8, 4.4]]
-    
-    f_t_level = [\
-    [], [], [-0.1, 0.], [], [], [-0.1, 1], \
-    [], [], [], [-0.1, 0.], [-0.1, 2], [-0.1, -1.], \
-    [], [-0.1, 0.], [-0.1, 1], [], [-0.1, 0.], [-0.1, 1.], \
-    [], [-0.1, 2.], [], []]
-    
-    f_t_range = [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [],
-                 [], [], [], [], [], []]
-    
-    fine_tune_list = [f_t_names, f_t_range, f_t_ylim, f_t_level]
-
     if fine_tune == True and cluster in fine_tune_list[0]:
         indx = fine_tune_list[0].index(cluster)
         if fine_tune_list[1][indx]:
@@ -142,8 +156,80 @@ def clust_main_seq(fine_tune, cluster, x, y, kde):
     # Range in y axis for accepting interpolated values for the sequence.
     y_lim = [y_min, y_max]
     return sequence, manual_levels, y_lim
-            
+           
+           
+           
+def get_isoch_seq(cluster, x, y, kde):
+    '''Generates countour plots around the cluster members now to trace the
+    evolved part of the isochrone for each cluster.
+    '''
+    
+    if fine_tune == True and cluster in fine_tune_list[0]:
+        indx = fine_tune_list[0].index(cluster)
+        if fine_tune_list[1][indx]:
+            manual_levels = np.arange(fine_tune_list[1][indx][0],
+                                      fine_tune_list[1][indx][1],\
+                                      fine_tune_list[1][indx][2])
+        else:
+            manual_levels = np.array([])
+        y_min, y_max = fine_tune_list[2][indx][0], fine_tune_list[2][indx][1]
+        lev_min, lev_num = fine_tune_list[3][indx] if fine_tune_list[3][indx] \
+        else [-0.1, -1]
+    else:
+        manual_levels = np.array([])
+        y_min, y_max = -10., 10.
+        lev_min, lev_num = 0.1, 1
 
+    # This list will hold the points obtained through the contour curves,
+    # the first sublist are the x coordinates of the points and the second
+    # the y coordinates.
+    sequence = [[], []]
+
+    # Store contour levels.
+    if fine_tune == True and manual_levels.any():
+        CS = plt.contour(x, y, kde, manual_levels)
+    else:
+        CS = plt.contour(x, y, kde)
+    # Store level values for contour levels.
+    levels = CS.levels
+    for i,clc in enumerate(CS.collections):
+        for j,pth in enumerate(clc.get_paths()):
+            cts = pth.vertices
+            d = sp.spatial.distance.cdist(cts,cts)
+            x_c,y_c = cts[list(sp.unravel_index(sp.argmax(d),d.shape))].T
+            # Only store points that belong to contour PDF values larger
+            # than lev_min and that belong to the uper curves, ie: do not
+            # use those with index <= lev_num.
+            if levels[i] > lev_min and i > lev_num:
+                # Only store points within these limits.
+                    sequence[0].append(round(x_c[0],4))
+                    sequence[1].append(round(y_c[0],4))
+                    sequence[0].append(round(x_c[1],4))
+                    sequence[1].append(round(y_c[1],4))
+
+    # Range in y axis for accepting interpolated values for the sequence.
+    y_lim = [y_min, y_max]
+    return isoch_seq, y_lim
+           
+
+def intrsc_values(col_obsrv, mag_obsrv, e_bv, dist_mod):
+    '''
+    Takes *observed* color and magnitude lists and returns corrected or
+    intrinsic lists. Depends on the system selected/used.
+    '''
+    # For Washington system.
+    #
+    # E(C-T1) = 1.97*E(B-V) = (C-T1) - (C-T)o
+    # M_T1 = T1 + 0.58*E(B-V) - (m-M)o - 3.2*E(B-V)
+    #
+    # (C-T1)o = (C-T1) - 1.97*E(B-V)
+    # M_T1 = T1 + 0.58*E(B-V) - (m-M)o - 3.2*E(B-V)
+    #
+    col_intrsc = np.array(col_obsrv) - 1.97*e_bv
+    mag_intrsc = np.array(mag_obsrv) + 0.58*e_bv - dist_mod - 3.2*e_bv
+    
+    return col_intrsc, mag_intrsc
+    
 
 def get_cluster_params():
     '''
@@ -513,59 +599,59 @@ def final_zams(clust_zams, clust_zams_params, m_rang):
     return ages_s, names_s, names_feh_s, final_zams_poli_s, zx_pol, zy_pol
     
 
-def add_isoch(clust_zams, clust_zams_params, m_rang):
-    '''
-    '''
-    
-    # This list holds the names and tuning parameters for those clusters that
-    # need it.
-    # 1st sub-list: Names of clusters
-    # 2nd: values to generate levels with np.arange()
-    # 3rd: y_min and y_max. Range where sequence will be interpolated.
-    # 4th: min level value to accept and min level number to accept.
-    add_isoch_list = [\
-    '']
-    
-    f_t_ylim = [\
-    [0.5, 3.2], [1., 2.6], [1.4, 4.], [3.2, 5.2], [3., 4.8], [2.2, 5.], \
-    [1.8, 2.7], [2., 4.], [2., 3.], [1., 3.4], [2.4, 3.6], [2., 4.], \
-    [0., 1.2], [-0.3, 1.2], [0.8, 1.8], [1.6, 2.8], [2., 3.2], [2., 4.5], \
-    [1.8, 5.], [2., 6.4], [1., 2.8], [2.8, 4.4]]
-    
-    f_t_level = [\
-    [], [], [-0.1, 0.], [], [], [-0.1, 1], \
-    [], [], [], [-0.1, 0.], [-0.1, 2], [-0.1, -1.], \
-    [], [-0.1, 0.], [-0.1, 1], [], [-0.1, 0.], [-0.1, 1.], \
-    [], [-0.1, 2.], [], []]
-    
-    f_t_range = [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [],
-                 [], [], [], [], [], []]
-    
-    fine_tune_list = [f_t_names, f_t_range, f_t_ylim, f_t_level]
-
-    if fine_tune == True and cluster in fine_tune_list[0]:
-        indx = fine_tune_list[0].index(cluster)
-        if fine_tune_list[1][indx]:
-            manual_levels = np.arange(fine_tune_list[1][indx][0],
-                                      fine_tune_list[1][indx][1],\
-                                      fine_tune_list[1][indx][2])
-        else:
-            manual_levels = np.array([])
-        y_min, y_max = fine_tune_list[2][indx][0], fine_tune_list[2][indx][1]
-        lev_min, lev_num = fine_tune_list[3][indx] if fine_tune_list[3][indx] \
-        else [-0.1, -1]
-    else:
-        manual_levels = np.array([])
-        y_min, y_max = -10., 10.
-        lev_min, lev_num = 0.1, 1
-
-    # This list will hold the points obtained through the contour curves,
-    # the first sublist are the x coordinates of the points and the second
-    # the y coordinates.
-    sequence = [[], []]
-        
-    
-    return sequence, manual_levels, y_lim
+#def add_isoch(clust_zams, clust_zams_params, m_rang):
+#    '''
+#    '''
+#    
+#    # This list holds the names and tuning parameters for those clusters that
+#    # need it.
+#    # 1st sub-list: Names of clusters
+#    # 2nd: values to generate levels with np.arange()
+#    # 3rd: y_min and y_max. Range where sequence will be interpolated.
+#    # 4th: min level value to accept and min level number to accept.
+#    add_isoch_list = [\
+#    '']
+#    
+#    f_t_ylim = [\
+#    [0.5, 3.2], [1., 2.6], [1.4, 4.], [3.2, 5.2], [3., 4.8], [2.2, 5.], \
+#    [1.8, 2.7], [2., 4.], [2., 3.], [1., 3.4], [2.4, 3.6], [2., 4.], \
+#    [0., 1.2], [-0.3, 1.2], [0.8, 1.8], [1.6, 2.8], [2., 3.2], [2., 4.5], \
+#    [1.8, 5.], [2., 6.4], [1., 2.8], [2.8, 4.4]]
+#    
+#    f_t_level = [\
+#    [], [], [-0.1, 0.], [], [], [-0.1, 1], \
+#    [], [], [], [-0.1, 0.], [-0.1, 2], [-0.1, -1.], \
+#    [], [-0.1, 0.], [-0.1, 1], [], [-0.1, 0.], [-0.1, 1.], \
+#    [], [-0.1, 2.], [], []]
+#    
+#    f_t_range = [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [],
+#                 [], [], [], [], [], []]
+#    
+#    fine_tune_list = [f_t_names, f_t_range, f_t_ylim, f_t_level]
+#
+#    if fine_tune == True and cluster in fine_tune_list[0]:
+#        indx = fine_tune_list[0].index(cluster)
+#        if fine_tune_list[1][indx]:
+#            manual_levels = np.arange(fine_tune_list[1][indx][0],
+#                                      fine_tune_list[1][indx][1],\
+#                                      fine_tune_list[1][indx][2])
+#        else:
+#            manual_levels = np.array([])
+#        y_min, y_max = fine_tune_list[2][indx][0], fine_tune_list[2][indx][1]
+#        lev_min, lev_num = fine_tune_list[3][indx] if fine_tune_list[3][indx] \
+#        else [-0.1, -1]
+#    else:
+#        manual_levels = np.array([])
+#        y_min, y_max = -10., 10.
+#        lev_min, lev_num = 0.1, 1
+#
+#    # This list will hold the points obtained through the contour curves,
+#    # the first sublist are the x coordinates of the points and the second
+#    # the y coordinates.
+#    sequence = [[], []]
+#        
+#    
+#    return sequence, manual_levels, y_lim
 
 
 print '\nPlotting sequences by metallicity interval'
