@@ -34,12 +34,12 @@ from scipy.stats import norm
 
 
 # This list stores the clusters selected manually.
-#manual_accept = ['BSDL654', 'BSDL761', 'BSDL779', 'C11', 'CZ26', 'CZ30',
-#                   'H88-188', 'H88-333', 'HAF11', 'HS38', 'HS130',
-#                   'KMHK1702', 'L49', 'L50', 'L114', 'LW469', 'NGC2236',
-#                   'NGC2324', 'RUP1', 'SL72', 'TO1']
+manual_accept = ['BSDL654', 'BSDL761', 'BSDL779', 'C11', 'CZ26', 'CZ30',
+                   'H88-188', 'H88-333', 'HAF11', 'HS38', 'HS130',
+                   'KMHK1702', 'L49', 'L50', 'L72', 'L114', 'LW469', 'NGC2236',
+                   'NGC2324', 'RUP1', 'SL72', 'TO1']
 
-manual_accept = ['BSDL654', 'BSDL761', 'BSDL779', 'L72']
+#manual_accept = ['BSDL654', 'BSDL761', 'BSDL779', 'L72']
                    
 
 

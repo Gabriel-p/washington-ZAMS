@@ -21,9 +21,11 @@ def make_final_plot(out_dir, fig_num, metal_min, metal_max, zam_met, metals_z,
     '''
 
     # Obtain global plotting limits.        
-    arr = np.array(final_zams_poli_s)
-    min_lim = map(lambda x: min(map(min, x)), zip(*arr))
-    max_lim = map(lambda x: max(map(max, x)), zip(*arr))
+#    arr = np.array(final_zams_poli_s)
+#    min_lim = map(lambda x: min(map(min, x)), zip(*arr))
+#    max_lim = map(lambda x: max(map(max, x)), zip(*arr))
+    min_lim = [-1.5, -3.]
+    max_lim = [3., 7.]
     
     
     # figsize(x1, y1), GridSpec(y2, x2) -> To have square plots:
