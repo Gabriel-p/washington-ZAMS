@@ -12,9 +12,9 @@ import matplotlib.gridspec as gridspec
 from matplotlib.ticker import MultipleLocator
 
 
-def make_final_plot(fig_num, ages_s, names_s, names_feh_s, final_zams_poli_s,
-                    metal_min, metal_max, zam_met, metals_z, metals_feh,
-                    zx_pol, zy_pol, out_dir):
+def make_final_plot(out_dir, fig_num, metal_min, metal_max, zam_met, metals_z,
+                    metals_feh, ages_s, names_s, names_feh_s, final_zams_poli_s,
+                    zx_pol, zy_pol):
     '''
     Print the final plot with all the sequences superimposed and fitted by a
     polynomial.

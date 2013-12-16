@@ -53,12 +53,12 @@ def intrsc_values(col_obsrv, mag_obsrv, e_bv, dist_mod):
 
 
 # This list store the clusters accepted manually.
-manual_accept = ['BSDL654', 'BSDL761', 'BSDL779', 'C11', 'CZ26', 'CZ30',
-                   'H88-188', 'H88-333', 'HAF11', 'HS38', 'HS130',
-                   'KMHK1702', 'L49', 'L50', 'L114', 'LW469', 'NGC2236',
-                   'NGC2324', 'RUP1', 'SL72', 'TO1']
+#manual_accept = ['BSDL654', 'BSDL761', 'BSDL779', 'C11', 'CZ26', 'CZ30',
+#                   'H88-188', 'H88-333', 'HAF11', 'HS38', 'HS130',
+#                   'KMHK1702', 'L49', 'L50', 'L114', 'LW469', 'NGC2236',
+#                   'NGC2324', 'RUP1', 'SL72', 'TO1']
 
-#manual_accept = ['BSDL654', 'BSDL761', 'BSDL779']
+manual_accept = ['BSDL654', 'BSDL761', 'BSDL779']
                    
 
 def contour_levels(fine_tune, cluster, x, y, kde):
@@ -479,8 +479,9 @@ for indx_met,m_rang in enumerate(metal_ranges):
         zx_pol = [p(i) for i in zy_pol]
 
         # Call function to generate plot for the metallicity range.
-        m_f_p(indx_met, ages_s, names_s, names_feh_s, final_zams_poli_s, m_rang[0],
-              m_rang[1], zam_met, metals_z, metals_feh, zx_pol, zy_pol, out_dir)
+        m_f_p(out_dir, indx_met, m_rang[0], m_rang[1], zam_met, metals_z,
+              metals_feh, ages_s, names_s, names_feh_s, final_zams_poli_s,
+              zx_pol, zy_pol)
     
     else:
         print 'Skipped %d' % indx_met
