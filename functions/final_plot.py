@@ -14,7 +14,7 @@ from matplotlib.ticker import MultipleLocator
 
 def make_final_plot(out_dir, fig_num, metal_min, metal_max, zam_met, metals_z,
                     metals_feh, ages_s, names_s, names_feh_s, final_zams_poli_s,
-                    zx_pol, zy_pol):
+                    zx_pol, zy_pol, clust_isoch):
     '''
     Print the final plot with all the sequences superimposed and fitted by a
     polynomial.
@@ -124,7 +124,8 @@ def make_final_plot(out_dir, fig_num, metal_min, metal_max, zam_met, metals_z,
     ax3.tick_params(which='major', length=12)
     ax3.grid(b=True, which='both', color='gray', linestyle='--', lw=1)
     ax3.tick_params(axis='both', which='major', labelsize=26)
-
+    # Plot fitting polinome for all sequences (final ZAMS).
+    plt.plot(zx_pol, zy_pol, c='r', lw=2.5, label='ZAMS')
     # Plot ZAMS envelope.
     k = 1 if min_met == max_met else 2
     ls_lst = ['--', '-.']
@@ -133,7 +134,10 @@ def make_final_plot(out_dir, fig_num, metal_min, metal_max, zam_met, metals_z,
         text2 = '[Fe/H] = %0.2f' % metals_feh[a[j]]
         text = text1+text2
         plt.plot(zam_met[a[j]][3], zam_met[a[j]][2], c='k', ls=ls_lst[j],
-                 lw=2., label=text)    
+                 lw=2., label=text)
+    # Plot isochrones sequences.
+    for isoch in clust_isoch:
+        plt.plot(isoch[0], isoch[1])
     # Add legend.
     leg = ax3.legend(loc="upper right", markerscale=1.5, scatterpoints=2,
                fontsize=18)
