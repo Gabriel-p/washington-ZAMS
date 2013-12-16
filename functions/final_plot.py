@@ -34,7 +34,7 @@ def make_final_plot(out_dir, fig_num, metal_min, metal_max, zam_met, metals_z,
     gs = gridspec.GridSpec(10, 30)  # create a GridSpec object
 
 
-    ax1 = plt.subplot(gs[1:9, 0:10])   
+    ax1 = plt.subplot(gs[1:8, 0:10])   
     plt.xlim(min_lim[0]-1., max_lim[0]+1.)
     plt.ylim(max_lim[1]+0.5, min_lim[1]-0.5)
     plt.xlabel(r'$(C-T_1)_o$', fontsize=28)
@@ -85,7 +85,7 @@ def make_final_plot(out_dir, fig_num, metal_min, metal_max, zam_met, metals_z,
              
             
             
-    ax2 = plt.subplot(gs[1:9, 10:20])    
+    ax2 = plt.subplot(gs[1:8, 10:20])    
     plt.xlim(min_lim[0]-1., max_lim[0]+1.)
     plt.ylim(max_lim[1]+0.5, min_lim[1]-0.5)
     plt.xlabel(r'$(C-T_1)_o$', fontsize=28)
@@ -114,7 +114,7 @@ def make_final_plot(out_dir, fig_num, metal_min, metal_max, zam_met, metals_z,
     leg.get_frame().set_alpha(0.5)
     
     
-    ax3 = plt.subplot(gs[1:9, 20:30])
+    ax3 = plt.subplot(gs[1:8, 20:30])
     plt.xlim(min_lim[0]-1., max_lim[0]+1.)
     plt.ylim(max_lim[1]+0.5, min_lim[1]-0.5)
     plt.xlabel(r'$(C-T_1)_o$', fontsize=28)

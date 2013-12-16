@@ -23,7 +23,7 @@ def make_cluster_cmds(sub_dir, cluster, col1_data, mag_data, stars_out_rjct,
                       stars_out, stars_in_rjct, stars_in, prob_memb_avrg,
                       popt_mag, popt_col1, cl_e_bv, cl_age, cl_feh, cl_dmod,
                       iso_moved, iso_intrsc,zams_iso, col1_min_int, col1_max_int, 
-                      mag_min_int, mag_max_int, min_prob, fine_tune, x, y, kde,
+                      mag_min_int, mag_max_int, min_prob, x, y, kde,
                       manual_levels, col_intrsc, mag_intrsc, memb_above_lim,
                       zam_met, x_pol, y_pol, out_dir):
 
@@ -194,7 +194,7 @@ def make_cluster_cmds(sub_dir, cluster, col1_data, mag_data, stars_out_rjct,
     # This reversed colormap means higher prob stars will look redder.
     cm = plt.cm.get_cmap('RdYlBu_r')
     # Plor contour levels.
-    if fine_tune == True and manual_levels.any():
+    if manual_levels.any():
         CS = plt.contour(x, y, kde, manual_levels)
     else:
         CS = plt.contour(x, y, kde)
