@@ -280,9 +280,9 @@ else:
 
 
 # Stores the CMD sequence obtained for each cluster.
-final_zams = []
+clust_zams = []
 # Also store the parameters associated with each cluster.
-final_zams_params = []
+clust_zams_params = []
 # Loop through all clusters processed.
 for indx, sub_dir in enumerate(sub_dirs):
     cluster = cl_names[indx]
@@ -408,9 +408,9 @@ data_all/cumulos-datos-fotometricos/'
                 
                 # Store the interpolated trimmed sequence obtained for this
                 # cluster in final list.
-                final_zams.append([x_pol_trim, y_pol_trim])
+                clust_zams.append([x_pol_trim, y_pol_trim])
                 # Also store the parameters associated with this cluster.
-                final_zams_params.append([cluster, cl_e_bv, cl_age, cl_feh,
+                clust_zams_params.append([cluster, cl_e_bv, cl_age, cl_feh,
                                           cl_dmod])
             else:
                 x_pol_trim, y_pol_trim = [], []
@@ -430,21 +430,17 @@ data_all/cumulos-datos-fotometricos/'
         
 
 
-print '\nPlotting sequences by metallicity interval'
-# Define metallicity intervals to plot.
-metal_ranges = [[-1.4, -0.71], [-0.7, -0.7], [-0.4, -0.4], [-0.3, -0.3],
-                [-0.15, 0.01]]
 
-
-# Create a plot for each metallicity range defined above.
-for indx_met,m_rang in enumerate(metal_ranges):
-    print 'Plotting %d' % indx_met
-    
+def final_zams(clust_zams, clust_zams_params, m_rang):
+    '''
+    Takes several cluster sequences and joins them into a sinclge ZAMS through
+    interpolation.
+    '''
     
     # Store in arrays the ages, names and names + ages for clusters inside the
     # metallicty range being processed.
     ages, names, names_feh = [], [], []
-    for seq_param in final_zams_params:
+    for seq_param in clust_zams_params:
         if m_rang[0] <= seq_param[3] <= m_rang[1]:
             ages.append(seq_param[2])
             names.append(seq_param[0])
@@ -456,8 +452,8 @@ for indx_met,m_rang in enumerate(metal_ranges):
     
         # Store interpolated (and possibly trimmed) sequences in single list.
         final_zams_poli = []
-        for indx, seq in enumerate(final_zams):
-            if m_rang[0] <= final_zams_params[indx][3] <= m_rang[1]:
+        for indx, seq in enumerate(clust_zams):
+            if m_rang[0] <= clust_zams_params[indx][3] <= m_rang[1]:
                 final_zams_poli.append([list(seq[0]), list(seq[1])]) 
 
         # Sort all lists according to age.
@@ -477,12 +473,34 @@ for indx_met,m_rang in enumerate(metal_ranges):
                             max(single_seq_list[1]), 50)
         p = np.poly1d(poli_zams)
         zx_pol = [p(i) for i in zy_pol]
+    else:
+        ages_s, names_s, names_feh_s, final_zams_poli_s, zx_pol, zy_pol =\
+        [], [], [], [], [], []
 
+    return ages_s, names_s, names_feh_s, final_zams_poli_s, zx_pol, zy_pol
+    
+
+
+print '\nPlotting sequences by metallicity interval'
+# Define metallicity intervals to plot.
+metal_ranges = [[-1.4, -0.71], [-0.7, -0.7], [-0.4, -0.4], [-0.3, -0.3],
+                [-0.15, 0.01]]
+
+
+# Create a plot for each metallicity range defined above.
+for indx_met,m_rang in enumerate(metal_ranges):
+    print 'Plotting %d' % indx_met
+    
+    
+    # Call function that generates the final ZAMS from all the unique sequences.
+    ages_s, names_s, names_feh_s, final_zams_poli_s, zx_pol, zy_pol = \
+    final_zams(clust_zams, clust_zams_params, m_rang)
+
+    if len(ages_s) != 0:
         # Call function to generate plot for the metallicity range.
         m_f_p(out_dir, indx_met, m_rang[0], m_rang[1], zam_met, metals_z,
               metals_feh, ages_s, names_s, names_feh_s, final_zams_poli_s,
               zx_pol, zy_pol)
-    
     else:
         print 'Skipped %d' % indx_met
         
