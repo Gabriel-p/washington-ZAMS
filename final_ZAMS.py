@@ -34,14 +34,14 @@ from scipy.stats import norm
 
 
 # This list stores the clusters selected manually.
-#zams_manual_accept = [\
-#'BSDL654', 'BSDL761', 'BSDL779', 'C11', 'CZ26', 'CZ30', 'HAF11', \
-#'H88-188', 'H88-333', 'HS38', 'HS130', 'KMHK128', 'KMHK1702', \
-#'L45', 'L49', 'L50', 'L72', 'L114', 'LW469', \
-#'NGC2236', 'NGC2324', 'RUP1', 'SL72', 'TO1']
-
 zams_manual_accept = [\
-'BSDL654', 'BSDL761', 'BSDL779']
+'BSDL654', 'BSDL761', 'BSDL779', 'C11', 'CZ26', 'CZ30', 'HAF11', \
+'H88-188', 'H88-333', 'HS38', 'HS130', 'KMHK128', 'KMHK1702', \
+'L45', 'L49', 'L50', 'L72', 'L114', 'LW469', \
+'NGC2236', 'NGC2324', 'RUP1', 'SL72', 'TO1']
+
+#zams_manual_accept = [\
+#'BSDL654', 'BSDL761', 'BSDL779']
                    
 # These lists hold the fine tuning parameters for those clusters that need it
 # to accurately trace its zero age main sequences.
@@ -67,18 +67,18 @@ f_t_range = [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [],
 fine_tune_zams = [f_t_ylim, f_t_level, f_t_range]
     
     
-iso_manual_accept = ['L72', 'NGC294', 'B112']
+iso_manual_accept = ['L72', 'NGC294', 'B112', 'HW63']
 
 # These lists hold the names and tuning parameters for those clusters used to
 # trace isochrones.
 
 isoch_ylim = [\
-[-4., -1.], [-0.8, 1.4], [0.5, 2.8]]
+[-4., -1.], [-0.8, 1.4], [0.5, 2.8], [2., 3.]]
 
 isoch_level = [\
-[], [], []]
+[], [], [],[]]
 
-isoch_range = [[], [], []]
+isoch_range = [[], [], [], []]
 
 fine_tune_isoch = [isoch_ylim, isoch_level, isoch_range]
     
@@ -596,59 +596,20 @@ def final_zams(clust_zams, clust_zams_params, m_rang):
     return ages_s, names_s, names_feh_s, final_zams_poli_s, zx_pol, zy_pol
     
 
-#def add_isoch(clust_zams, clust_zams_params, m_rang):
-#    '''
-#    '''
-#    
-#    # This list holds the names and tuning parameters for those clusters that
-#    # need it.
-#    # 1st sub-list: Names of clusters
-#    # 2nd: values to generate levels with np.arange()
-#    # 3rd: y_min and y_max. Range where sequence will be interpolated.
-#    # 4th: min level value to accept and min level number to accept.
-#    add_isoch_list = [\
-#    '']
-#    
-#    f_t_ylim = [\
-#    [0.5, 3.2], [1., 2.6], [1.4, 4.], [3.2, 5.2], [3., 4.8], [2.2, 5.], \
-#    [1.8, 2.7], [2., 4.], [2., 3.], [1., 3.4], [2.4, 3.6], [2., 4.], \
-#    [0., 1.2], [-0.3, 1.2], [0.8, 1.8], [1.6, 2.8], [2., 3.2], [2., 4.5], \
-#    [1.8, 5.], [2., 6.4], [1., 2.8], [2.8, 4.4]]
-#    
-#    f_t_level = [\
-#    [], [], [-0.1, 0.], [], [], [-0.1, 1], \
-#    [], [], [], [-0.1, 0.], [-0.1, 2], [-0.1, -1.], \
-#    [], [-0.1, 0.], [-0.1, 1], [], [-0.1, 0.], [-0.1, 1.], \
-#    [], [-0.1, 2.], [], []]
-#    
-#    f_t_range = [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [],
-#                 [], [], [], [], [], []]
-#    
-#    fine_tune_list = [f_t_names, f_t_range, f_t_ylim, f_t_level]
-#
-#    if fine_tune == True and cluster in fine_tune_list[0]:
-#        indx = fine_tune_list[0].index(cluster)
-#        if fine_tune_list[1][indx]:
-#            manual_levels = np.arange(fine_tune_list[1][indx][0],
-#                                      fine_tune_list[1][indx][1],\
-#                                      fine_tune_list[1][indx][2])
-#        else:
-#            manual_levels = np.array([])
-#        y_min, y_max = fine_tune_list[2][indx][0], fine_tune_list[2][indx][1]
-#        lev_min, lev_num = fine_tune_list[3][indx] if fine_tune_list[3][indx] \
-#        else [-0.1, -1]
-#    else:
-#        manual_levels = np.array([])
-#        y_min, y_max = -10., 10.
-#        lev_min, lev_num = 0.1, 1
-#
-#    # This list will hold the points obtained through the contour curves,
-#    # the first sublist are the x coordinates of the points and the second
-#    # the y coordinates.
-#    sequence = [[], []]
-#        
-#    
-#    return sequence, manual_levels, y_lim
+def metal_isoch(clust_isoch, clust_isoch_params, m_rang):
+    '''
+    Selects those isochrone sequences located inside the metallicity range given.
+    '''
+    
+    # Store in arrays the isoch sequences and params for clusters inside the
+    # metallicty range being processed.
+    clust_isoch_met, clust_isoch_params_met = [], []
+    for indx,iso_param in enumerate(clust_isoch_params):
+        if m_rang[0] <= iso_param[3] <= m_rang[1]:
+            clust_isoch_met.append(clust_isoch[indx])
+            clust_isoch_params_met.append(iso_param)
+        
+    return clust_isoch_met, clust_isoch_params_met
 
 
 print '\nPlotting sequences by metallicity interval'
@@ -665,12 +626,17 @@ for indx_met,m_rang in enumerate(metal_ranges):
     # Call function that generates the final ZAMS from all the unique sequences.
     ages_s, names_s, names_feh_s, final_zams_poli_s, zx_pol, zy_pol = \
     final_zams(clust_zams, clust_zams_params, m_rang)
+    
+    # Call function that selects only isochrones in the given metallicity range.
+    clust_isoch_met, clust_isoch_params_met = metal_isoch(clust_isoch,
+                                                          clust_isoch_params,
+                                                          m_rang)
 
     if len(ages_s) != 0:
         # Call function to generate plot for the metallicity range.
         m_f_p(out_dir, indx_met, m_rang[0], m_rang[1], zam_met, metals_z,
               metals_feh, ages_s, names_s, names_feh_s, final_zams_poli_s,
-              zx_pol, zy_pol, clust_isoch, clust_isoch_params)
+              zx_pol, zy_pol, clust_isoch_met, clust_isoch_params_met)
     else:
         print 'Skipped %d' % indx_met
         
