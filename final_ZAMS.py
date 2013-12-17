@@ -73,7 +73,7 @@ iso_manual_accept = ['L72', 'NGC294', 'B112', 'HW63', 'NGC1839', 'LW69']
 # trace isochrones.
 
 isoch_ylim = [\
-[-4., -1.4], [-0.8, 1.8], [0.8, 3.], [2., 3.3], [-2., 1.4], [1., 2.8]]
+[-4., -0.6], [-0.8, 1.8], [0.8, 3.], [2., 3.3], [-2., 1.4], [1., 2.8]]
 
 isoch_level = [\
 [], [], [-0.1, 0.],[], [-0.1, 0.], []]
@@ -606,13 +606,22 @@ def metal_isoch(clust_isoch, clust_isoch_params, m_rang):
     
     # Store in arrays the isoch sequences and params for clusters inside the
     # metallicty range being processed.
-    clust_isoch_met, clust_isoch_params_met = [], []
+    clust_isoch_met, clust_isoch_params_met, iso_ages = [], [], []
     for indx,iso_param in enumerate(clust_isoch_params):
         if m_rang[0] <= iso_param[3] <= m_rang[1]:
+            iso_ages.append(iso_param[2])
             clust_isoch_met.append(clust_isoch[indx])
             clust_isoch_params_met.append(iso_param)
+            
+    # Sort all lists according to age.
+    if iso_ages:
+        iso_ages_s, clust_isoch_met_s, clust_isoch_params_met_s = \
+        map(list, zip(*sorted(zip(iso_ages, clust_isoch_met,
+                                  clust_isoch_params_met), reverse=True)))
+    else:
+        iso_ages_s, clust_isoch_met_s, clust_isoch_params_met_s = [], [], []
         
-    return clust_isoch_met, clust_isoch_params_met
+    return iso_ages_s, clust_isoch_met_s, clust_isoch_params_met_s
 
 
 print '\nPlotting sequences by metallicity interval'
@@ -631,15 +640,14 @@ for indx_met,m_rang in enumerate(metal_ranges):
     final_zams(clust_zams, clust_zams_params, m_rang)
     
     # Call function that selects only isochrones in the given metallicity range.
-    clust_isoch_met, clust_isoch_params_met = metal_isoch(clust_isoch,
-                                                          clust_isoch_params,
-                                                          m_rang)
+    iso_ages, clust_isoch_met, clust_isoch_params_met = metal_isoch(clust_isoch,\
+    clust_isoch_params, m_rang)
 
     if len(ages_s) != 0:
         # Call function to generate plot for the metallicity range.
         m_f_p(out_dir, indx_met, m_rang[0], m_rang[1], zam_met, metals_z,
               metals_feh, ages_s, names_s, names_feh_s, final_zams_poli_s,
-              zx_pol, zy_pol, clust_isoch_met, clust_isoch_params_met)
+              zx_pol, zy_pol, iso_ages, clust_isoch_met, clust_isoch_params_met)
     else:
         print 'Skipped %d' % indx_met
         

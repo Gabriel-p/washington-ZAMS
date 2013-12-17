@@ -14,7 +14,7 @@ from matplotlib.ticker import MultipleLocator
 
 def make_final_plot(out_dir, fig_num, metal_min, metal_max, zam_met, metals_z,
                     metals_feh, ages_s, names_s, names_feh_s, final_zams_poli_s,
-                    zx_pol, zy_pol, clust_isoch, clust_isoch_params):
+                    zx_pol, zy_pol, iso_ages, clust_isoch, clust_isoch_params):
     '''
     Print the final plot with all the sequences superimposed and fitted by a
     polynomial.
@@ -130,14 +130,32 @@ def make_final_plot(out_dir, fig_num, metal_min, metal_max, zam_met, metals_z,
     # Plot fitting polinome for all sequences (final ZAMS).
     plt.plot(zx_pol, zy_pol, c='k', lw=2.5, label='ZAMS')
     # Plot each cluster's isochrone.
-    for indx,isoch in enumerate(clust_isoch):
+    cmap = plt.get_cmap('jet')
+    k = 0
+    for (x, y), color in zip(clust_isoch, iso_ages):
         # Transform color value.
-        l, = plt.plot(isoch[0], isoch[1], label=clust_isoch_params[indx][0],
-                      lw=2.)
-        pos = [isoch[0][0]+0.15, isoch[1][0]]
-        plt.text(pos[0], pos[1], str(int(clust_isoch_params[indx][2]*1000.))+' Myr',
-                 size=16, rotation=0, ha="center",\
+        if max(iso_ages) != min(iso_ages):
+            m, h = 1./(max(iso_ages) - min(iso_ages)), \
+            min(ages_s)/(min(iso_ages) - max(iso_ages))
+        else:
+            m, h = 1., 1.
+        col_transf = m*color+h
+        l, = plt.plot(x, y, label=clust_isoch_params[k][0],
+                      color=cmap(col_transf), lw=2.)
+        pos = [clust_isoch[k][0][0]+0.15, clust_isoch[k][1][0]]
+        plt.text(pos[0], pos[1], str(int(clust_isoch_params[k][2]*1000.))+' Myr',
+                 size=16, rotation=0, color=l.get_color(),ha="center",\
                  va="center", bbox=dict(ec='1',fc='1', alpha=0.6))        
+        k += 1
+#    # Plot each cluster's isochrone.
+#    for indx,isoch in enumerate(clust_isoch):
+#        # Transform color value.
+#        l, = plt.plot(isoch[0], isoch[1], label=clust_isoch_params[indx][0],
+#                      lw=2.)
+#        pos = [isoch[0][0]+0.15, isoch[1][0]]
+#        plt.text(pos[0], pos[1], str(int(clust_isoch_params[indx][2]*1000.))+' Myr',
+#                 size=16, rotation=0, ha="center",\
+#                 va="center", bbox=dict(ec='1',fc='1', alpha=0.6))        
     # Add legend.
     leg = ax3.legend(loc="upper right", markerscale=1.5, scatterpoints=2,
                fontsize=18)
