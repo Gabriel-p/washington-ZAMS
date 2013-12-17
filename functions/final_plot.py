@@ -134,7 +134,7 @@ def make_final_plot(out_dir, fig_num, metal_min, metal_max, zam_met, metals_z,
         # Transform color value.
         l, = plt.plot(isoch[0], isoch[1], label=clust_isoch_params[indx][0],
                       lw=2.)
-        pos = [isoch[0][1]+0.3, isoch[1][0]]
+        pos = [isoch[0][0]+0.15, isoch[1][0]]
         plt.text(pos[0], pos[1], str(int(clust_isoch_params[indx][2]*1000.))+' Myr',
                  size=16, rotation=0, ha="center",\
                  va="center", bbox=dict(ec='1',fc='1', alpha=0.6))        
