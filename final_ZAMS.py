@@ -35,10 +35,10 @@ from scipy.stats import norm
 
 # This list stores the clusters selected manually.
 zams_manual_accept = [\
-'BSDL654', 'BSDL761', 'BSDL779', 'C11', 'CZ26', 'CZ30', 'HAF11', \
-'H88-188', 'H88-333', 'HS38', 'HS130', 'KMHK128', 'KMHK1702', \
-'L45', 'L49', 'L50', 'L72', 'L114', 'LW469', \
-'NGC2236', 'NGC2324', 'RUP1', 'SL72', 'TO1']
+'BSDL654', 'BSDL761', 'BSDL779', 'C11', 'CZ26', 'CZ30', \
+'HAF11', 'H88-188', 'H88-333', 'HS38', 'HS130', \
+'KMHK1702','L49', 'L50', 'L72', 'L114', \
+'LW469', 'NGC2236', 'NGC2324', 'RUP1', 'SL72', 'TO1']
 
 #zams_manual_accept = [\
 #'BSDL654', 'BSDL761', 'BSDL779']
@@ -48,20 +48,20 @@ zams_manual_accept = [\
 
 # Range where the sequences will be interpolated.
 f_t_ylim = [\
-[0.5, 3.2], [1., 2.6], [1.6, 4.], [1.4, 4.], [3.2, 5.2], [3., 4.8], [2.2, 5.], \
-[1.8, 2.7], [2., 4.], [2., 3.], [1., 3.4], [2.4, 3.6], [2., 4.], \
-[0., 1.2], [-0.3, 1.2], [0.8, 1.8], [-1., 0.8], [1.6, 2.8], [2., 3.2], \
+[0.5, 3.2], [1., 2.6], [1.6, 4.], [1.4, 4.], [3.2, 5.2], [3., 4.8], \
+[2.2, 5.], [1.8, 2.7], [2., 4.], [2., 3.], [1., 3.4], \
+[2., 4.], [-0.3, 1.2], [0.8, 1.8], [-1., 0.8], [1.6, 2.8], [2., 3.2], \
 [2., 4.5], [1.8, 5.], [2., 6.4], [1., 2.8], [2.8, 4.4]]
 
 # min level value to accept and min level number to accept.
 f_t_level = [\
-[], [], [], [-0.1, 0.], [], [], [-0.1, 1], \
-[], [], [], [-0.1, 0.], [-0.1, 2], [-0.1, -1.], \
-[], [-0.1, 0.], [-0.1, 1], [], [], [-0.1, 0.], \
+[], [], [], [-0.1, 0.], [], [], \
+[-0.1, 1], [], [], [], [-0.1, 0.], \
+[-0.1, -1.], [-0.1, 0.], [-0.1, 1], [], [], [-0.1, 0.], \
 [-0.1, 1.], [], [-0.1, 2.], [], []]
 
 # Values to generate levels with np.arange()
-f_t_range = [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [],
+f_t_range = [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [],
              [], [], [], [], [], [], []]
 
 fine_tune_zams = [f_t_ylim, f_t_level, f_t_range]
@@ -306,7 +306,7 @@ def write_seq_file(out_dir, cluster, x_pol, y_pol):
     Write interpolated sequence to output file.
     '''
     out_file = join(out_dir+'fitted_zams'+'/'+cluster+'_ZAMS.dat')
-    line = zip(*[['%.2f' % i for i in x_pol], ['%.2f' % i for i in y_pol]])
+    line = zip(*[['%.4f' % i for i in x_pol], ['%.4f' % i for i in y_pol]])
     with open(out_file, 'w') as f_out:
         f_out.write("#x_zams y_zams\n")
         for item in line:
@@ -319,7 +319,7 @@ def write_iso_file(out_dir, cluster, x_pol, y_pol):
     Write interpolated isochrone part to output file.
     '''
     out_file = join(out_dir+'fitted_zams'+'/'+cluster+'_iso.dat')
-    line = zip(*[['%.2f' % i for i in x_pol], ['%.2f' % i for i in y_pol]])
+    line = zip(*[['%.4f' % i for i in x_pol], ['%.4f' % i for i in y_pol]])
     with open(out_file, 'w') as f_out:
         f_out.write("#x_iso y_iso\n")
         for item in line:
@@ -550,7 +550,7 @@ data_all/cumulos-datos-fotometricos/'
 
 
 
-def final_zams(clust_zams, clust_zams_params, m_rang):
+def final_zams(clust_zams, clust_zams_params, m_rang, indx_met):
     '''
     Takes several cluster sequences and joins them into a sinclge ZAMS through
     interpolation.
@@ -592,6 +592,16 @@ def final_zams(clust_zams, clust_zams_params, m_rang):
                             max(single_seq_list[1]), 50)
         p = np.poly1d(poli_zams)
         zx_pol = [p(i) for i in zy_pol]
+
+        # Write interpolated ZAMS to output file.
+        out_file = join(out_dir+'fitted_zams/final_ZAMS_%d.dat' % indx_met)
+        line = zip(*[['%.2f' % i for i in zx_pol], ['%.2f' % i for i in zy_pol]])
+        with open(out_file, 'w') as f_out:
+            f_out.write("#x_zams y_zams\n")
+            for item in line:
+                f_out.write('{:<7} {:>5}'.format(*item))
+                f_out.write('\n')
+        
     else:
         ages_s, names_s, names_feh_s, final_zams_poli_s, zx_pol, zy_pol =\
         [], [], [], [], [], []
@@ -599,7 +609,7 @@ def final_zams(clust_zams, clust_zams_params, m_rang):
     return ages_s, names_s, names_feh_s, final_zams_poli_s, zx_pol, zy_pol
     
 
-def metal_isoch(clust_isoch, clust_isoch_params, m_rang):
+def metal_isoch(clust_isoch, clust_isoch_params, zx_pol, zy_pol, m_rang):
     '''
     Selects those isochrone sequences located inside the metallicity range given.
     '''
@@ -613,6 +623,39 @@ def metal_isoch(clust_isoch, clust_isoch_params, m_rang):
             clust_isoch_met.append(clust_isoch[indx])
             clust_isoch_params_met.append(iso_param)
             
+    # Check for duplicated ages.
+    
+    # Interpolate a single isochrone from those with the same age.
+    
+    # Replace all the isochrones of same age with the newly interpolated one.
+    
+    # Interpolate points close to the final ZAMS so as to smooth the section
+    # were they intersect.
+#    for isoch in clust_isoch_met:
+#        x3, y3 = [], []
+#        for indx,y2_i in enumerate(isoch[1]):
+#            if (isoch[1][-1]-y2_i)<=0.2:
+#                y3.append(y2_i)
+#                x3.append(isoch[0][indx])
+#                
+#        for indx,y1_i in enumerate(zy_pol):
+#            if 0. <(y1_i-isoch[1][-1])<=0.4 and zx_pol[indx] > isoch[0][-1]:
+#                y3.append(y1_i)
+#                x3.append(zx_pol[indx])
+#        
+#        poli_order = 4 # Order of the polynome.
+#        poli = np.polyfit(y3, x3, poli_order)
+#        y_pol = np.linspace(min(y3), max(y3), 50)
+#        p = np.poly1d(poli)
+#        x_pol = [p(i) for i in y_pol]
+#        
+#        # Find point where the interpolated connecting segment intersects
+#        # the ZAMS.
+#        for pt in y_pol:
+#            dist = np.sqrt()
+        
+    
+    
     # Sort all lists according to age.
     if iso_ages:
         iso_ages_s, clust_isoch_met_s, clust_isoch_params_met_s = \
@@ -637,11 +680,11 @@ for indx_met,m_rang in enumerate(metal_ranges):
     
     # Call function that generates the final ZAMS from all the unique sequences.
     ages_s, names_s, names_feh_s, final_zams_poli_s, zx_pol, zy_pol = \
-    final_zams(clust_zams, clust_zams_params, m_rang)
+    final_zams(clust_zams, clust_zams_params, m_rang, indx_met)
     
     # Call function that selects only isochrones in the given metallicity range.
     iso_ages, clust_isoch_met, clust_isoch_params_met = metal_isoch(clust_isoch,\
-    clust_isoch_params, m_rang)
+    clust_isoch_params, zx_pol, zy_pol, m_rang)
 
     if len(ages_s) != 0:
         # Call function to generate plot for the metallicity range.

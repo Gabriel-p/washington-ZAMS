@@ -130,7 +130,7 @@ def make_final_plot(out_dir, fig_num, metal_min, metal_max, zam_met, metals_z,
     # Plot fitting polinome for all sequences (final ZAMS).
     plt.plot(zx_pol, zy_pol, c='k', lw=2.5, label='ZAMS')
     # Plot each cluster's isochrone.
-    cmap = plt.get_cmap('jet')
+    cmap = plt.get_cmap('rainbow')
     k = 0
     for (x, y), color in zip(clust_isoch, iso_ages):
         # Transform color value.
