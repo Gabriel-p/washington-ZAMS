@@ -194,12 +194,6 @@ def make_cluster_cmds(sub_dir, cluster, col1_data, mag_data, stars_out_rjct,
     ax4.grid(b=True, which='major', color='gray', linestyle='--', lw=1)
     # This reversed colormap means higher prob stars will look redder.
     cm = plt.cm.get_cmap('RdYlBu_r')
-    # Plor contour levels.
-    if manual_levels.any():
-        CS = plt.contour(x, y, kde, manual_levels)
-    else:
-        CS = plt.contour(x, y, kde)
-    plt.clabel(CS, fontsize=11, inline=1)
     # Invert list so stars with higher probs will be on top.
     temp_list = [col_intrsc, mag_intrsc, memb_above_lim[2]]
     temp_inv = [i[::-1] for i in temp_list]
@@ -210,14 +204,21 @@ def make_cluster_cmds(sub_dir, cluster, col1_data, mag_data, stars_out_rjct,
     a = [0, -1]
     for j in a:
         plt.plot(zam_met[j][3], zam_met[j][2], c='g', ls='--') 
+    # Plot intrinsic isochrone.
+    plt.plot(iso_intrsc[1], iso_intrsc[0], 'k', lw=1.5, ls='--')
+    # Plor contour levels.
+    if manual_levels.any():
+        CS = plt.contour(x, y, kde, manual_levels, zorder=5)
+    else:
+        CS = plt.contour(x, y, kde, zorder=5)
+    plt.clabel(CS, fontsize=11, inline=1, zorder=5)
     # Plot polynomial zams fit only if list is not empty.
     if x_pol:
         plt.plot(x_pol, y_pol, c='k', lw=2, zorder=6)
     # Plot pply fit of traced isochrone.
     if x_pol_trim_iso:
         plt.plot(x_pol_trim_iso, y_pol_trim_iso, 'b', lw=2, zorder=6)
-    # Plot intrinsic isochrone.
-    plt.plot(iso_intrsc[1], iso_intrsc[0], 'k', lw=1.5, ls='--')
+
                  
 
  
