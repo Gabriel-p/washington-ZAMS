@@ -64,18 +64,18 @@ f_t_range = [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [],
 fine_tune_zams = [f_t_ylim, f_t_level, f_t_range]
     
     
-iso_manual_accept = ['L72', 'NGC294']
+iso_manual_accept = ['L72', 'NGC294', 'B112']
 
 # These lists hold the names and tuning parameters for those clusters used to
 # trace isochrones.
 
 isoch_ylim = [\
-[-4., -1.], [-0.8, 1.4]]
+[-4., -1.], [-0.8, 1.4], [0.5, 2.8]]
 
 isoch_level = [\
-[], []]
+[], [], []]
 
-isoch_range = [[], []]
+isoch_range = [[], [], []]
 
 fine_tune_isoch = [isoch_ylim, isoch_level, isoch_range]
     

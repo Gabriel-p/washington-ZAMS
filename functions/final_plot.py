@@ -129,8 +129,8 @@ def make_final_plot(out_dir, fig_num, metal_min, metal_max, zam_met, metals_z,
     # Plot fitting polinome for all sequences (final ZAMS).
     plt.plot(zx_pol, zy_pol, c='k', lw=2.5, label='ZAMS')
     # Plot each cluster's isochrone.
-#    cmap = plt.get_cmap('rainbow')
     for indx,isoch in enumerate(clust_isoch):
+        # Transform color value.
         l, = plt.plot(isoch[0], isoch[1], label=clust_isoch_params[indx][0],
                       lw=2.)
         pos = [isoch[0][1]+0.3, isoch[1][0]]
