@@ -67,18 +67,18 @@ f_t_range = [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [],
 fine_tune_zams = [f_t_ylim, f_t_level, f_t_range]
     
     
-iso_manual_accept = ['L72', 'NGC294', 'B112', 'HW63', 'NGC1839']
+iso_manual_accept = ['L72', 'NGC294', 'B112', 'HW63', 'NGC1839', 'LW69']
 
 # These lists hold the names and tuning parameters for those clusters used to
 # trace isochrones.
 
 isoch_ylim = [\
-[-4., -1.], [-0.8, 1.4], [0.5, 2.8], [2., 3.3], [-2., 1.4]]
+[-4., -1.4], [-0.8, 1.4], [0.8, 3.], [2., 3.3], [-2., 1.4], [1., 2.8]]
 
 isoch_level = [\
-[], [], [-0.1, 1.],[], [-0.1, 0.]]
+[], [], [-0.1, 0.],[], [-0.1, 0.], []]
 
-isoch_range = [[], [], [], [], []]
+isoch_range = [[], [], [], [], [], []]
 
 fine_tune_isoch = [isoch_ylim, isoch_level, isoch_range]
     
@@ -512,17 +512,19 @@ data_all/cumulos-datos-fotometricos/'
                 # plot the polynomial fit.
                 if isoch_seq[0]:
     
+                    # Trim the sequence points to the range in y axis.
+                    y_trim_iso, x_trim_iso = zip(*[(ia,ib) for (ia, ib) in \
+                    zip(isoch_seq[1], isoch_seq[0]) \
+                    if y_lim_iso[0] <= ia <= y_lim_iso[1]])    
+    
                     # Obtain the sequence's fitting polinome.
                     poli_order = 3 # Order of the polynome.
-                    poli = np.polyfit(isoch_seq[1], isoch_seq[0], poli_order)
-                    y_pol = np.linspace(min(isoch_seq[1]), max(isoch_seq[1]), 50)
+                    poli = np.polyfit(y_trim_iso, x_trim_iso, poli_order)
+                    y_pol_trim_iso = np.linspace(min(y_trim_iso),
+                                                 max(y_trim_iso), 50)
                     p = np.poly1d(poli)
-                    x_pol = [p(i) for i in y_pol]
+                    x_pol_trim_iso = [p(i) for i in y_pol_trim_iso]
     
-                    # Trim the interpolated sequence to the range in y axis.
-                    y_pol_trim_iso, x_pol_trim_iso = zip(*[(ia,ib) for (ia, ib) in \
-                    zip(y_pol,x_pol) if y_lim_iso[0] <= ia <= y_lim_iso[1]])
-                    
                     # Store the interpolated trimmed sequence obtained for this
                     # cluster in final list.
                     clust_isoch.append([x_pol_trim_iso, y_pol_trim_iso])
