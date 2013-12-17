@@ -20,13 +20,6 @@ def make_final_plot(out_dir, fig_num, metal_min, metal_max, zam_met, metals_z,
     polynomial.
     '''
 
-    # Obtain global plotting limits.        
-#    arr = np.array(final_zams_poli_s)
-#    min_lim = map(lambda x: min(map(min, x)), zip(*arr))
-#    max_lim = map(lambda x: max(map(max, x)), zip(*arr))
-    min_lim = [-1.5, -3.]
-    max_lim = [3., 7.]
-    
     
     # figsize(x1, y1), GridSpec(y2, x2) -> To have square plots:
     # x1/x2 = y1/y2 = 2.5 
@@ -34,7 +27,12 @@ def make_final_plot(out_dir, fig_num, metal_min, metal_max, zam_met, metals_z,
     gs = gridspec.GridSpec(10, 30)  # create a GridSpec object
 
 
-    ax1 = plt.subplot(gs[1:8, 0:10])   
+    # Obtain global plotting limits.
+    arr = np.array(final_zams_poli_s)
+    min_lim = map(lambda x: min(map(min, x)), zip(*arr))
+    max_lim = map(lambda x: max(map(max, x)), zip(*arr))
+    
+    ax1 = plt.subplot(gs[1:7, 0:10])   
     plt.xlim(min_lim[0]-1., max_lim[0]+1.)
     plt.ylim(max_lim[1]+0.5, min_lim[1]-0.5)
     plt.xlabel(r'$(C-T_1)_o$', fontsize=28)
@@ -85,7 +83,7 @@ def make_final_plot(out_dir, fig_num, metal_min, metal_max, zam_met, metals_z,
              
             
             
-    ax2 = plt.subplot(gs[1:8, 10:20])    
+    ax2 = plt.subplot(gs[1:7, 10:20])    
     plt.xlim(min_lim[0]-1., max_lim[0]+1.)
     plt.ylim(max_lim[1]+0.5, min_lim[1]-0.5)
     plt.xlabel(r'$(C-T_1)_o$', fontsize=28)
@@ -114,7 +112,10 @@ def make_final_plot(out_dir, fig_num, metal_min, metal_max, zam_met, metals_z,
     leg.get_frame().set_alpha(0.5)
     
     
-    ax3 = plt.subplot(gs[1:8, 20:30])
+    ax3 = plt.subplot(gs[1:7, 20:30])
+    arr = np.array(final_zams_poli_s + clust_isoch)
+    min_lim = map(lambda x: min(map(min, x)), zip(*arr))
+    max_lim = map(lambda x: max(map(max, x)), zip(*arr))
     plt.xlim(min_lim[0]-1., max_lim[0]+1.)
     plt.ylim(max_lim[1]+0.5, min_lim[1]-0.5)
     plt.xlabel(r'$(C-T_1)_o$', fontsize=28)
