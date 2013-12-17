@@ -67,18 +67,18 @@ f_t_range = [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [],
 fine_tune_zams = [f_t_ylim, f_t_level, f_t_range]
     
     
-iso_manual_accept = ['L72', 'NGC294', 'B112', 'HW63']
+iso_manual_accept = ['L72', 'NGC294', 'B112', 'HW63', 'BRHT4B']
 
 # These lists hold the names and tuning parameters for those clusters used to
 # trace isochrones.
 
 isoch_ylim = [\
-[-4., -1.], [-0.8, 1.4], [0.5, 2.8], [2., 3.2]]
+[-4., -1.], [-0.8, 1.4], [0.5, 2.8], [2., 3.3], [-2., -0.2]]
 
 isoch_level = [\
-[], [], [],[]]
+[], [], [-0.1, 0.],[], [-0.1, 1.]]
 
-isoch_range = [[], [], [], []]
+isoch_range = [[], [], [], [], []]
 
 fine_tune_isoch = [isoch_ylim, isoch_level, isoch_range]
     
@@ -542,7 +542,8 @@ data_all/cumulos-datos-fotometricos/'
                   iso_moved, iso_intrsc, zams_iso, col1_min_int, col1_max_int, 
                   mag_min_int, mag_max_int, min_prob, x, y, kde,
                   manual_levels, col_intrsc, mag_intrsc, memb_above_lim,
-                  zam_met, x_pol_trim, y_pol_trim, out_dir)
+                  zam_met, x_pol_trim, y_pol_trim, x_pol_trim_iso,
+                  y_pol_trim_iso, out_dir)
         
 
 

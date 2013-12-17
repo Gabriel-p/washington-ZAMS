@@ -25,7 +25,8 @@ def make_cluster_cmds(sub_dir, cluster, col1_data, mag_data, stars_out_rjct,
                       iso_moved, iso_intrsc,zams_iso, col1_min_int, col1_max_int, 
                       mag_min_int, mag_max_int, min_prob, x, y, kde,
                       manual_levels, col_intrsc, mag_intrsc, memb_above_lim,
-                      zam_met, x_pol, y_pol, out_dir):
+                      zam_met, x_pol, y_pol, x_pol_trim_iso, y_pol_trim_iso,
+                      out_dir):
 
 
     # Used when plotting all stars inside cluster radius with their
@@ -209,9 +210,12 @@ def make_cluster_cmds(sub_dir, cluster, col1_data, mag_data, stars_out_rjct,
     a = [0, -1]
     for j in a:
         plt.plot(zam_met[j][3], zam_met[j][2], c='g', ls='--') 
-    # Plot polynomial fit only if list is not empty.
+    # Plot polynomial zams fit only if list is not empty.
     if x_pol:
         plt.plot(x_pol, y_pol, c='k', lw=2, zorder=6)
+    # Plot pply fit of traced isochrone.
+    if x_pol_trim_iso:
+        plt.plot(x_pol_trim_iso, y_pol_trim_iso, 'b', lw=2, zorder=6)
     # Plot intrinsic isochrone.
     plt.plot(iso_intrsc[1], iso_intrsc[0], 'k', lw=1.5, ls='--')
                  
