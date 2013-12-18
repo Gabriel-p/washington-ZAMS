@@ -217,7 +217,7 @@ def make_cluster_cmds(sub_dir, cluster, col1_data, mag_data, stars_out_rjct,
     # Plot polynomial zams fit only if list is not empty.
     if x_pol:
         plt.plot(x_pol, y_pol, c='k', lw=2, zorder=6)
-    # Plot pply fit of traced isochrone.
+    # Plot poly fit of traced isochrone.
     if x_pol_trim_iso:
         plt.plot(x_pol_trim_iso, y_pol_trim_iso, 'b', lw=2, zorder=6)
 

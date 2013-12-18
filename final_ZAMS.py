@@ -90,24 +90,28 @@ def clust_main_seq(cluster, x, y, kde):
     the ZAMS fiducial line for each cluster.
     '''
     
-    indx = zams_manual_accept.index(cluster)
-    # Check if a range was set for this cluster to generate its density
-    # levels.
-    if fine_tune_zams[2][indx]:
-        manual_levels = np.arange(fine_tune_zams[2][indx][0],
-                                  fine_tune_zams[2][indx][1],\
-                                  fine_tune_zams[2][indx][2])
-    else:
+    try:
+        indx = zams_manual_accept.index(cluster)
+        # Check if a range was set for this cluster to generate its density
+        # levels.
+        if fine_tune_zams[2][indx]:
+            manual_levels = np.arange(fine_tune_zams[2][indx][0],
+                                      fine_tune_zams[2][indx][1],\
+                                      fine_tune_zams[2][indx][2])
+        else:
+            manual_levels = np.array([])
+        # Set interpolating range and contour levels to be acceoted.
+        if fine_tune_zams[0][indx]:
+            y_min, y_max = fine_tune_zams[0][indx][0], fine_tune_zams[0][indx][1]
+        else:
+            y_min, y_max = -10., 10.
+        lev_min, lev_num = fine_tune_zams[1][indx] if fine_tune_zams[1][indx] \
+        else [-0.1, -1]
+    except ValueError:
         manual_levels = np.array([])
-    # Set interpolating range and contour levels to be acceoted.
-    if fine_tune_zams[0][indx]:
-        y_min, y_max = fine_tune_zams[0][indx][0], fine_tune_zams[0][indx][1]
-    else:
         y_min, y_max = -10., 10.
-    lev_min, lev_num = fine_tune_zams[1][indx] if fine_tune_zams[1][indx] \
-    else [-0.1, -1]
-
-
+        lev_min, lev_num = [0., 1]
+    
     # This list will hold the points obtained through the contour curves,
     # the first sublist are the x coordinates of the points and the second
     # the y coordinates.
@@ -350,7 +354,7 @@ else:
     
     
 # Ask if all clusters should be processed or only those in a list.
-clust_quest = raw_input('Use all clusters? (y/n): ')
+use_all_clust = raw_input('Use all clusters? (y/n): ')
 
 
 # Stores the CMD sequence obtained for each cluster.
@@ -362,9 +366,11 @@ clust_zams_params, clust_isoch_params = [], []
 for indx, sub_dir in enumerate(sub_dirs):
     cluster = cl_names[indx]
 
-    # Check if cluster is in list.    
-    if clust_quest == 'y':
+    # Check if cluster is in list.
+    flag_all = False    
+    if use_all_clust == 'y':
         run_cluster = True
+        flag_all = True
     else:
         if cluster in zams_manual_accept or cluster in iso_manual_accept:
             run_cluster = True
@@ -468,7 +474,7 @@ data_all/cumulos-datos-fotometricos/'
             kernel = stats.gaussian_kde(values, bw_method = None)
             kde = np.reshape(kernel(positions).T, x.shape)
             
-            if cluster in zams_manual_accept:
+            if cluster in zams_manual_accept or flag_all:
                 # Call the function that returns the sequence determined by the two
                 # points further from each other in each contour level.
                 sequence, manual_levels, y_lim = clust_main_seq(cluster,
@@ -503,7 +509,7 @@ data_all/cumulos-datos-fotometricos/'
                 x_pol_trim, y_pol_trim = [], []
             
             
-            if cluster in iso_manual_accept:
+            if cluster in iso_manual_accept or flag_all:
                 # Call the function that returns the evolved part of the isochrone
                 # for this cluster.
                 isoch_seq, y_lim_iso = get_isoch_seq(cluster, x, y, kde)
@@ -533,6 +539,8 @@ data_all/cumulos-datos-fotometricos/'
                                               cl_dmod])
                     # Write interpolated sequence to output file.
                     write_iso_file(out_dir, cluster, x_pol_trim_iso, y_pol_trim_iso)
+                else:
+                    x_pol_trim_iso, y_pol_trim_iso = [], []
             else:
                 x_pol_trim_iso, y_pol_trim_iso = [], []
         
