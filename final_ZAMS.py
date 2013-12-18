@@ -396,7 +396,7 @@ data_all/cumulos-datos-fotometricos/'
             if cluster in zams_manual_accept or flag_all:
                 
                 # Store y_lim and level values for this cluster.
-                if cluster in zams_manual_accept:
+                if cluster in zams_manual_accept and not flag_all:
                     indx = zams_manual_accept.index(cluster)
                     y_lim = ft_z_ylim[indx]
                     lev_min, lev_num = ft_z_level[indx][0], ft_z_level[indx][1]
@@ -477,7 +477,7 @@ data_all/cumulos-datos-fotometricos/'
                 []
             
             
-            if cluster in iso_manual_accept:
+            if cluster in iso_manual_accept and not flag_all:
                 
                 indx = iso_manual_accept.index(cluster)
                 y_lim_iso = ft_i_ylim[indx]
