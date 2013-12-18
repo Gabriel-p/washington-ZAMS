@@ -53,7 +53,7 @@ f_t_ylim = [\
 
 # min level value to accept and min level number to accept.
 f_t_level = [\
-[], [], [], [-0.1, 0.], [], [], \
+[], [], [], [-0.1, 0.], [0., 0.], [], \
 [-0.1, 1], [], [], [], [-0.1, 0.], \
 [-0.1, -1.], [-0.1, 0.], [-0.1, 1], [], [], [-0.1, 0.], \
 [-0.1, 1.], [], [-0.1, 2.], [], []]
@@ -550,10 +550,12 @@ data_all/cumulos-datos-fotometricos/'
                     
                 # Write interpolating points to file according to the method
                 # that was selected.
+                def_method = True
                 if cluster in zams_manual_accept:
                     indx = zams_manual_accept.index(cluster)
                     if fine_tune_zams[2][indx] != 0:
                         x_pol_sel, y_pol_sel = x_pol_trim_2, y_pol_trim_2
+                        def_method = False
                     else:
                         x_pol_sel, y_pol_sel = x_pol_trim, y_pol_trim
                 else:
@@ -612,7 +614,8 @@ data_all/cumulos-datos-fotometricos/'
                   mag_min_int, mag_max_int, min_prob, x, y, kde,
                   col_intrsc, mag_intrsc, memb_above_lim,
                   zam_met, metals_feh, x_pol_trim, y_pol_trim, x_pol_trim_2,
-                  y_pol_trim_2, x_pol_trim_iso, y_pol_trim_iso, out_dir)
+                  y_pol_trim_2, def_method, x_pol_trim_iso, y_pol_trim_iso,
+                  out_dir)
         
 
 

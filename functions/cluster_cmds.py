@@ -25,7 +25,7 @@ def make_cluster_cmds(sub_dir, cluster, col1_data, mag_data, stars_out_rjct,
                       iso_moved, iso_intrsc,zams_iso, col1_min_int, col1_max_int, 
                       mag_min_int, mag_max_int, min_prob, x, y, kde, col_intrsc,
                       mag_intrsc, memb_above_lim, zam_met, metals_feh, x_pol,
-                      y_pol, x_pol_2, y_pol_2, x_pol_trim_iso,
+                      y_pol, x_pol_2, y_pol_2, def_method, x_pol_trim_iso,
                       y_pol_trim_iso, out_dir):
 
 
@@ -184,8 +184,13 @@ def make_cluster_cmds(sub_dir, cluster, col1_data, mag_data, stars_out_rjct,
     text = text1+text2+text3+text4
     plt.text(0.7, 0.83, text, transform = ax4.transAxes,
              bbox=dict(facecolor='white', alpha=0.5), fontsize=24)
-    plt.text(0.05, 0.93, r'$P_{lim}=%0.2f$' % min_prob,
-             transform=ax4.transAxes,
+    text1 = r'$P_{lim}=%0.2f$' '\n' % min_prob
+    if def_method:
+        text2 = r'$method:\, contour$'
+    else:
+        text2 = r'$method:\, stars$'
+    text = text1 + text2
+    plt.text(0.05, 0.9, text, transform=ax4.transAxes,
              bbox=dict(facecolor='white', alpha=0.5), fontsize=24)
     # Set minor ticks
     ax4.minorticks_on()
