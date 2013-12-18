@@ -139,7 +139,7 @@ def clust_main_seq(cluster, x, y, kde):
     # Range in y axis for accepting interpolated values for the sequence.
     y_lim = [y_min, y_max]
     return sequence, manual_levels, y_lim
-           
+          
            
            
 def get_isoch_seq(cluster, x, y, kde):
@@ -161,7 +161,7 @@ def get_isoch_seq(cluster, x, y, kde):
         else:
             y_min, y_max = -10., 10.
         lev_min, lev_num = fine_tune_isoch[1][indx] if fine_tune_isoch[1][indx] \
-        else [-0.1, -1]
+        else [0., 0.]
 
     
         # This list will hold the points obtained through the contour curves,
