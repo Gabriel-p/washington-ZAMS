@@ -97,7 +97,7 @@ def clust_main_seq_contour(cluster, x, y, kde):
         else:
             y_min, y_max = -10., 10.
         lev_min, lev_num = fine_tune_zams[1][indx] if fine_tune_zams[1][indx] \
-        else [-0.1, -1]
+        else [0., 1]
     except ValueError:
         y_min, y_max = -10., 10.
         lev_min, lev_num = [0., 1]
@@ -147,7 +147,7 @@ def clust_main_seq_stars(cluster, x, y, kde, cluster_region, kernel):
         else:
             y_min, y_max = -10., 10.
         lev_min, lev_num = fine_tune_zams[1][indx] if fine_tune_zams[1][indx] \
-        else [-0.1, -1]
+        else [0., 1]
     except ValueError:
         y_min, y_max = -10., 10.
         lev_min, lev_num = [0., 1]
