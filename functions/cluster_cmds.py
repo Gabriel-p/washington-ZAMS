@@ -156,7 +156,7 @@ def make_cluster_cmds(sub_dir, cluster, col1_data, mag_data, stars_out_rjct,
                  xerr=exp_func(mag_y, *popt_col1), fmt='k.', lw=1.2, \
                  ms=0., zorder=4)
     # Plot ZAMS.
-    plt.plot(zams_iso[1], zams_iso[0], c='k', ls='--', lw=1.5)
+    plt.plot(zams_iso[1], zams_iso[0], c='k', ls='--', lw=1.5, zorder=4)
     # Plot moved isochrone.
     plt.plot(iso_moved[1], iso_moved[0], 'k', lw=2.)
     # Plot colorbar.
