@@ -34,11 +34,12 @@ from scipy.stats import norm
 
 
 # This list stores the clusters selected manually.
-zams_manual_accept = [\
-'BSDL654', 'BSDL761', 'BSDL779', 'C11', 'CZ26', 'CZ30', \
-'HAF11', 'H88-188', 'H88-333', 'HS38', 'HS130', \
-'KMHK1702','L49', 'L50', 'L72', 'L114', \
-'LW469', 'NGC2236', 'NGC2324', 'RUP1', 'SL72', 'TO1']
+#zams_manual_accept = [\
+#'BSDL654', 'BSDL761', 'BSDL779', 'C11', 'CZ26', 'CZ30', \
+#'HAF11', 'H88-188', 'H88-333', 'HS38', 'HS130', \
+#'KMHK1702','L49', 'L50', 'L72', 'L114', \
+#'LW469', 'NGC2236', 'NGC2324', 'RUP1', 'SL72', 'TO1']
+zams_manual_accept = []
                    
 # These lists hold the fine tuning parameters for those clusters that need it
 # to accurately trace its zero age main sequences.
@@ -64,7 +65,8 @@ f_t_range = [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [],
 fine_tune_zams = [f_t_ylim, f_t_level, f_t_range]
     
     
-iso_manual_accept = ['L72', 'NGC294', 'B112', 'HW63', 'NGC1839', 'LW69', 'L50']
+#iso_manual_accept = ['L72', 'NGC294', 'B112', 'HW63', 'NGC1839', 'LW69', 'L50']
+iso_manual_accept = []
 
 # These lists hold the names and tuning parameters for those clusters used to
 # trace isochrones.
@@ -535,17 +537,18 @@ data_all/cumulos-datos-fotometricos/'
                 # If the contour points returns an empty list don't attempt to
                 # plot the polynomial fit.
                 if sequence[0]:
+
+                    # Trim the interpolated sequence to the range in y axis.
+                    y_trim, x_trim = zip(*[(ia,ib) for (ia, ib) in \
+                    zip(sequence[1], sequence[0]) if y_lim[0] <= ia <= y_lim[1]])                    
+                    
                     # Obtain the sequence's fitting polinome.
                     poli_order = 2 # Order of the polynome.
-                    poli = np.polyfit(sequence[1], sequence[0], poli_order)
-                    y_pol = np.linspace(min(sequence[1]), max(sequence[1]), 50)
+                    poli = np.polyfit(y_trim, x_trim, poli_order)
+                    y_pol_trim = np.linspace(min(y_trim), max(y_trim), 50)
                     p = np.poly1d(poli)
-                    x_pol = [p(i) for i in y_pol]
+                    x_pol_trim = [p(i) for i in y_pol_trim]
     
-                    # Trim the interpolated sequence to the range in y axis.
-                    y_pol_trim, x_pol_trim = zip(*[(ia,ib) for (ia, ib) in \
-                    zip(y_pol,x_pol) if y_lim[0] <= ia <= y_lim[1]])
-                    
                     # Store the interpolated trimmed sequence obtained for this
                     # cluster in final list.
                     clust_zams.append([x_pol_trim, y_pol_trim])
@@ -567,16 +570,17 @@ data_all/cumulos-datos-fotometricos/'
                 # If the contour points returns an empty list don't attempt to
                 # plot the polynomial fit.
                 if sequence[0]:
+
+                    # Trim the interpolated sequence to the range in y axis.
+                    y_trim_2, x_trim_2 = zip(*[(ia,ib) for (ia, ib) in \
+                    zip(sequence[1], sequence[0]) if y_lim[0] <= ia <= y_lim[1]])                    
+                    
                     # Obtain the sequence's fitting polinome.
                     poli_order = 2 # Order of the polynome.
-                    poli = np.polyfit(sequence[1], sequence[0], poli_order)
-                    y_pol = np.linspace(min(sequence[1]), max(sequence[1]), 50)
+                    poli = np.polyfit(y_trim_2, x_trim_2, poli_order)
+                    y_pol_trim_2 = np.linspace(min(y_trim_2), max(y_trim_2), 50)
                     p = np.poly1d(poli)
-                    x_pol = [p(i) for i in y_pol]
-    
-                    # Trim the interpolated sequence to the range in y axis.
-                    y_pol_trim_2, x_pol_trim_2 = zip(*[(ia,ib) for (ia, ib) in \
-                    zip(y_pol,x_pol) if y_lim[0] <= ia <= y_lim[1]])
+                    x_pol_trim_2 = [p(i) for i in y_pol_trim_2]
                 else:
                     x_pol_trim_2, y_pol_trim_2 = [], []                
             else:
