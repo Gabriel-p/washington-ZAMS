@@ -60,7 +60,7 @@ f_t_level = [\
 
 # Select the method to use previous to the interpolation. 0 means contour
 # (used as default) and 1 means stars inside maximum contour level.
-f_t_method = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+f_t_method = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
 
 fine_tune_zams = [f_t_ylim, f_t_level, f_t_method]
     
@@ -497,31 +497,14 @@ data_all/cumulos-datos-fotometricos/'
             
             if cluster in zams_manual_accept or flag_all:
                 
-                # Use the selected method for obtaining the points that trace
-                # the sequencefor this cluster.
-                default_method = True
-                if cluster in zams_manual_accept:
-                    indx = zams_manual_accept.index(cluster)
-                    if fine_tune_zams[2][indx] != 0:
-                        default_method = False
-                        
-                if default_method:
-                    # Call the function that returns the sequence determined by
-                    # the two points further from each other in each contour
-                    # level.
-                    sequence, y_lim = clust_main_seq_contour(cluster, x, y, kde)              
-                else:
-                    cluster_region = zip(*[col_intrsc, mag_intrsc])
-                    # Call the function that returns the sequence determined by
-                    # the stars inside the maximum contour level set.
-                    sequence, y_lim = clust_main_seq_stars(cluster, x, y, kde,
-                                                           cluster_region,
-                                                           kernel)  
+                # Call the function that returns the sequence determined by
+                # the two points further from each other in each contour
+                # level.
+                sequence, y_lim = clust_main_seq_contour(cluster, x, y, kde)              
 
                 # If the sequence is an empty list don't attempt to plot the
                 # polynomial fit.
                 if sequence[0]:
-
                     # Trim the interpolated sequence to the range in y axis.
                     y_trim, x_trim = zip(*[(ia,ib) for (ia, ib) in \
                     zip(sequence[1], sequence[0]) if y_lim[0] <= ia <= y_lim[1]])                    
@@ -539,35 +522,49 @@ data_all/cumulos-datos-fotometricos/'
                     # Also store the parameters associated with this cluster.
                     clust_zams_params.append([cluster, cl_e_bv, cl_age, cl_feh,
                                               cl_dmod])
-
-                    # Write interpolated sequence to output file.
-                    write_seq_file(out_dir, cluster, x_pol_trim, y_pol_trim)                                              
                 else:
                     x_pol_trim, y_pol_trim = [], []
-    
-#                cluster_region = zip(*[col_intrsc, mag_intrsc])
-#                # Call the function that returns the sequence determined by the two
-#                # points further from each other in each contour level.
-#                sequence, manual_levels, y_lim = clust_main_seq_2(cluster,\
-#                x, y, kde, cluster_region, kernel)
-#                # If the contour points returns an empty list don't attempt to
-#                # plot the polynomial fit.
-#                if sequence[0]:
-#
-#                    # Trim the interpolated sequence to the range in y axis.
-#                    y_trim_2, x_trim_2 = zip(*[(ia,ib) for (ia, ib) in \
-#                    zip(sequence[1], sequence[0]) if y_lim[0] <= ia <= y_lim[1]])                    
-#                    
-#                    # Obtain the sequence's fitting polinome.
-#                    poli_order = 2 # Order of the polynome.
-#                    poli = np.polyfit(y_trim_2, x_trim_2, poli_order)
-#                    y_pol_trim_2 = np.linspace(min(y_trim_2), max(y_trim_2), 50)
-#                    p = np.poly1d(poli)
-#                    x_pol_trim_2 = [p(i) for i in y_pol_trim_2]
-#                else:
-#                    x_pol_trim_2, y_pol_trim_2 = [], []                
+
+
+                # Call the function that returns the sequence determined by
+                # the stars inside the maximum contour level set.
+                cluster_region = zip(*[col_intrsc, mag_intrsc])
+                sequence, y_lim = clust_main_seq_stars(cluster, x, y, kde,
+                                                       cluster_region, kernel) 
+                # If the contour points returns an empty list don't attempt to
+                # plot the polynomial fit.
+                if sequence[0]:
+                    # Trim the interpolated sequence to the range in y axis.
+                    y_trim_2, x_trim_2 = zip(*[(ia,ib) for (ia, ib) in \
+                    zip(sequence[1], sequence[0]) if y_lim[0] <= ia <= y_lim[1]])                    
+                    
+                    # Obtain the sequence's fitting polinome.
+                    poli_order = 2 # Order of the polynome.
+                    poli = np.polyfit(y_trim_2, x_trim_2, poli_order)
+                    y_pol_trim_2 = np.linspace(min(y_trim_2), max(y_trim_2), 50)
+                    p = np.poly1d(poli)
+                    x_pol_trim_2 = [p(i) for i in y_pol_trim_2]
+                else:
+                    x_pol_trim_2, y_pol_trim_2 = [], []
+                    
+                # Write interpolating points to file according to the method
+                # that was selected.
+                if cluster in zams_manual_accept:
+                    indx = zams_manual_accept.index(cluster)
+                    if fine_tune_zams[2][indx] != 0:
+                        x_pol_sel, y_pol_sel = x_pol_trim_2, y_pol_trim_2
+                    else:
+                        x_pol_sel, y_pol_sel = x_pol_trim, y_pol_trim
+                else:
+                    x_pol_sel, y_pol_sel = x_pol_trim, y_pol_trim
+                        
+                # Write interpolated sequence to output file.
+                write_seq_file(out_dir, cluster, x_pol_sel, y_pol_sel)                     
+                    
+            # If cluster is not to be processed.
             else:
-                x_pol_trim, y_pol_trim = [], []
+                x_pol_trim, y_pol_trim, x_pol_trim_2, y_pol_trim_2 = [], [], [],\
+                []
             
             
             if cluster in iso_manual_accept or flag_all:
@@ -613,8 +610,8 @@ data_all/cumulos-datos-fotometricos/'
                   iso_moved, iso_intrsc, zams_iso, col1_min_int, col1_max_int, 
                   mag_min_int, mag_max_int, min_prob, x, y, kde,
                   col_intrsc, mag_intrsc, memb_above_lim,
-                  zam_met, metals_feh, x_pol_trim, y_pol_trim, x_pol_trim_iso,
-                  y_pol_trim_iso, out_dir)
+                  zam_met, metals_feh, x_pol_trim, y_pol_trim, x_pol_trim_2,
+                  y_pol_trim_2, x_pol_trim_iso, y_pol_trim_iso, out_dir)
         
 
 
