@@ -60,8 +60,10 @@ def clust_seqences(cluster, x, y, x_lim, y_lim, lev_num, kde, cluster_region,
                         break
         else:
             # If lev_num is negative use ALL stars within the limits.
-            seq_stars[0].append(star[0])
-            seq_stars[1].append(star[1])
+            if x_lim[0] <= star[0] <= x_lim[1] and \
+            y_lim[0] <= star[1] <= y_lim[1]:
+                seq_stars[0].append(star[0])
+                seq_stars[1].append(star[1])
             
 
     # If the sequence is an empty list don't attempt to plot the
