@@ -37,8 +37,12 @@ def clust_seqences(cluster, x, y, x_lim, y_lim, lev_num, kde, cluster_region,
             # use those with index < lev_num.
             if i >= lev_num:
                 # Only store points within these limits.
+                if x_lim[0] <= x_c[0] <= x_lim[1] and \
+                y_lim[0] <= y_c[0] <= y_lim[1]:
                     seq_contour[0].append(round(x_c[0],4))
                     seq_contour[1].append(round(y_c[0],4))
+                if x_lim[0] <= x_c[1] <= x_lim[1] and \
+                y_lim[0] <= y_c[1] <= y_lim[1]:
                     seq_contour[0].append(round(x_c[1],4))
                     seq_contour[1].append(round(y_c[1],4))
 
@@ -86,7 +90,7 @@ def clust_seqences(cluster, x, y, x_lim, y_lim, lev_num, kde, cluster_region,
     # If the sequence is an empty list don't attempt to
     # plot the polynomial fit.
     if seq_stars[0]:
-        # Trim the interpolated sequence to the range in y axis.
+        # Keep only those stars within the range in y axis.
         y_trim_2, x_trim_2 = zip(*[(ia,ib) for (ia, ib) in \
         zip(seq_stars[1], seq_stars[0]) if y_lim[0] <= ia <= y_lim[1]])                    
         
