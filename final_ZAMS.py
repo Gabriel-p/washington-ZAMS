@@ -37,7 +37,8 @@ from scipy.interpolate import spline
 def clust_seqences(cluster, x, y, lev_min, lev_num, kde, cluster_region, kernel):
     '''This is the central function. It generates the countour plots around the
     cluster members. The extreme points of these contour levels are used to trace
-    the ZAMS fiducial line for each cluster.
+    the ZAMS fiducial line for each cluster in the first block and the stars
+    inside these contours (up to a maximum level) are used iun the second block.
     '''
     
     # This list will hold the points obtained through the contour curves,
