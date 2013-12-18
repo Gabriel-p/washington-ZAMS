@@ -140,7 +140,61 @@ def clust_main_seq(cluster, x, y, kde):
     y_lim = [y_min, y_max]
     return sequence, manual_levels, y_lim
           
-           
+        
+        
+def clust_main_seq_2(cluster, x, y, kde, cluster_region, kernel):
+    '''This is the central function. It generates the countour plots around the
+    cluster members and then makes use of those stars inside the maximum contour
+    allowed to trace the zams.
+    '''
+    
+    try:
+        indx = zams_manual_accept.index(cluster)
+        # Check if a range was set for this cluster to generate its density
+        # levels.
+        if fine_tune_zams[2][indx]:
+            manual_levels = np.arange(fine_tune_zams[2][indx][0],
+                                      fine_tune_zams[2][indx][1],\
+                                      fine_tune_zams[2][indx][2])
+        else:
+            manual_levels = np.array([])
+        # Set interpolating range and contour levels to be acceoted.
+        if fine_tune_zams[0][indx]:
+            y_min, y_max = fine_tune_zams[0][indx][0], fine_tune_zams[0][indx][1]
+        else:
+            y_min, y_max = -10., 10.
+        lev_min, lev_num = fine_tune_zams[1][indx] if fine_tune_zams[1][indx] \
+        else [-0.1, -1]
+    except ValueError:
+        manual_levels = np.array([])
+        y_min, y_max = -10., 10.
+        lev_min, lev_num = [0., 1]
+    
+    # Store contour levels.
+    if manual_levels.any():
+        CS = plt.contour(x, y, kde, manual_levels)
+    else:
+        CS = plt.contour(x, y, kde)
+    # Store level values for contour levels.
+    levels = CS.levels
+        
+    for star in cluster_region:
+        kde_star = kernel((star[0], star[1]))
+        
+        for i,clc in enumerate(CS.collections):
+            # Only use stars inside the allowed max contour and min level value.
+            if levels[i] > lev_min and i > lev_num:
+                if kde_star >= levels[i]:
+                    # Only store stars within these limits.
+                    sequence[0].append(star[0])
+                    sequence[1].append(star[1])
+                    break
+
+    # Range in y axis for accepting interpolated values for the sequence.
+    y_lim = [y_min, y_max]
+    return sequence, manual_levels, y_lim        
+        
+        
            
 def get_isoch_seq(cluster, x, y, kde):
     '''Generates countour plots around the cluster members now to trace the
@@ -502,8 +556,32 @@ data_all/cumulos-datos-fotometricos/'
     
                 # Write interpolated sequence to output file.
                 write_seq_file(out_dir, cluster, x_pol_trim, y_pol_trim)
+                
+                
+                cluster_region = zip(*[col_intrsc, mag_intrsc])
+                # Call the function that returns the sequence determined by the two
+                # points further from each other in each contour level.
+                sequence, manual_levels, y_lim = clust_main_seq_2(cluster,\
+                x, y, kde, cluster_region, kernel)
+                # If the contour points returns an empty list don't attempt to
+                # plot the polynomial fit.
+                if sequence[0]:
+                    # Obtain the sequence's fitting polinome.
+                    poli_order = 3 # Order of the polynome.
+                    poli = np.polyfit(sequence[1], sequence[0], poli_order)
+                    y_pol = np.linspace(min(sequence[1]), max(sequence[1]), 50)
+                    p = np.poly1d(poli)
+                    x_pol = [p(i) for i in y_pol]
+    
+                    # Trim the interpolated sequence to the range in y axis.
+                    y_pol_trim_2, x_pol_trim_2 = zip(*[(ia,ib) for (ia, ib) in \
+                    zip(y_pol,x_pol) if y_lim[0] <= ia <= y_lim[1]])
+                else:
+                    x_pol_trim_2, y_pol_trim_2 = [], []                
+                
+                
             else:
-                x_pol_trim, y_pol_trim = [], []
+                x_pol_trim_2, y_pol_trim_2 = [], []
             
             
             if cluster in iso_manual_accept or flag_all:
@@ -549,8 +627,8 @@ data_all/cumulos-datos-fotometricos/'
                   iso_moved, iso_intrsc, zams_iso, col1_min_int, col1_max_int, 
                   mag_min_int, mag_max_int, min_prob, x, y, kde,
                   manual_levels, col_intrsc, mag_intrsc, memb_above_lim,
-                  zam_met, metals_feh, x_pol_trim, y_pol_trim, x_pol_trim_iso,
-                  y_pol_trim_iso, out_dir)
+                  zam_met, metals_feh, x_pol_trim, y_pol_trim, x_pol_trim_2,
+                  y_pol_trim_2, x_pol_trim_iso, y_pol_trim_iso, out_dir)
         
 
 
