@@ -30,6 +30,7 @@ from itertools import chain
 
 import matplotlib.pyplot as plt
 from scipy.stats import norm
+from scipy.interpolate import spline
 
 
     
@@ -648,15 +649,15 @@ def metal_isoch(clust_isoch, clust_isoch_params, zx_pol, zy_pol, m_rang):
     for isoch in clust_isoch_met:
         
         # Iterate though ZAMS points ordered in increasing order in y.
+        x3, y3 = [], []
         for indx,y1_i in enumerate(zy_pol):
             if 0. <(y1_i-isoch[1][-1])<=0.4 and zx_pol[indx] > isoch[0][-1]:
                 y3 = [y1_i]
                 x3 = [zx_pol[indx]]
                 break
-       
-        from scipy.interpolate import spline
-        sx = np.array(isoch[0]+x3)
-        sy = np.array(isoch[1].tolist()+y3)
+
+        sx = np.array(list(isoch[0])+x3)
+        sy = np.array(list(isoch[1])+y3)
         t  = np.arange(sx.size,dtype=float)
         t /= t[-1]
         N  = np.linspace(0,1,1000)

@@ -10,3 +10,4 @@
 #
 #NAME  y_min y_max lev_min lev_num method
 BSDL654  2.4   3.6      0.      0.      0
+BSDL716   0.   2.8      0.     -1.      0
