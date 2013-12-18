@@ -505,16 +505,17 @@ data_all/cumulos-datos-fotometricos/'
                 # If the sequence is an empty list don't attempt to plot the
                 # polynomial fit.
                 if sequence[0]:
-                    # Trim the interpolated sequence to the range in y axis.
-                    y_trim, x_trim = zip(*[(ia,ib) for (ia, ib) in \
-                    zip(sequence[1], sequence[0]) if y_lim[0] <= ia <= y_lim[1]])                    
                     
                     # Obtain the sequence's fitting polinome.
                     poli_order = 2 # Order of the polynome.
-                    poli = np.polyfit(y_trim, x_trim, poli_order)
-                    y_pol_trim = np.linspace(min(y_trim), max(y_trim), 50)
+                    poli = np.polyfit(sequence[1], sequence[0], poli_order)
+                    y_pol = np.linspace(min(sequence[1]), max(sequence[1]), 50)
                     p = np.poly1d(poli)
-                    x_pol_trim = [p(i) for i in y_pol_trim]
+                    x_pol = [p(i) for i in y_pol]
+
+                    # Trim the interpolated sequence to the range in y axis.
+                    y_pol_trim, x_pol_trim = zip(*[(ia,ib) for (ia, ib) in \
+                    zip(y_pol, x_pol) if y_lim[0] <= ia <= y_lim[1]])      
     
                     # Store the interpolated trimmed sequence obtained for this
                     # cluster in final list.
