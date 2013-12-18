@@ -16,6 +16,7 @@ See README.md file for more information.
 import functions.get_data as gd
 import functions.err_accpt_rejct as ear
 import functions.get_in_out as gio
+from functions.get_clust_seq import clust_seqences
 from functions.get_isochrones import get_isochrones as g_i
 from functions.cluster_cmds import make_cluster_cmds as m_c_c
 from functions.final_plot import make_final_plot as m_f_p
@@ -25,65 +26,13 @@ from os.path import join, getsize
 from os.path import expanduser
 import glob
 from scipy import stats
-import scipy as sp
 from itertools import chain
 
-import matplotlib.pyplot as plt
 from scipy.stats import norm
 from scipy.interpolate import spline
 
 
     
-def clust_seqences(cluster, x, y, lev_min, lev_num, kde, cluster_region, kernel):
-    '''This is the central function. It generates the countour plots around the
-    cluster members. The extreme points of these contour levels are used to trace
-    the ZAMS fiducial line for each cluster in the first block and the stars
-    inside these contours (up to a maximum level) are used iun the second block.
-    '''
-    
-    # This list will hold the points obtained through the contour curves,
-    # the first sublist are the x coordinates of the points and the second
-    # the y coordinates.
-    seq_contour, seq_stars = [[], []], [[], []]
-
-    # Store contour levels.
-    CS = plt.contour(x, y, kde)
-    # Store level values for contour levels.
-    levels = CS.levels
-    
-    for i,clc in enumerate(CS.collections):
-        for j,pth in enumerate(clc.get_paths()):
-            cts = pth.vertices
-            d = sp.spatial.distance.cdist(cts,cts)
-            x_c,y_c = cts[list(sp.unravel_index(sp.argmax(d),d.shape))].T
-            # Only store points that belong to contour PDF values larger
-            # than lev_min and that belong to the uper curves, ie: do not
-            # use those with index <= lev_num.
-            if levels[i] >= lev_min and i >= lev_num:
-                # Only store points within these limits.
-                    seq_contour[0].append(round(x_c[0],4))
-                    seq_contour[1].append(round(y_c[0],4))
-                    seq_contour[0].append(round(x_c[1],4))
-                    seq_contour[1].append(round(y_c[1],4))
-
-    # This block is similar to the process above but his one generates the
-    # countour plots around the cluster members and then makes use of those
-    # stars inside the maximum contour allowed to trace the ZAMS instead of
-    # the diametral points in the contours themselves.
-    for star in cluster_region:
-        kde_star = kernel((star[0], star[1]))
-        for i,clc in enumerate(CS.collections):
-            # Only use stars inside the allowed max contour and min level value.
-            if levels[i] >= lev_min and i >= lev_num:
-                if kde_star >= levels[i]:
-                    # Only store stars within these limits.
-                    seq_stars[0].append(star[0])
-                    seq_stars[1].append(star[1])
-                    break
-
-    return seq_contour, seq_stars
-        
-
 def intrsc_values(col_obsrv, mag_obsrv, e_bv, dist_mod):
     '''
     Takes *observed* color and magnitude lists and returns corrected or
@@ -168,7 +117,7 @@ def get_manual_select(myfile):
     fine tuning parameters to trace either its fiducial ZAMS sequence or its
     evolved isochrone section.
     '''
-    manual_accept, ft_ylim, ft_level, ft_method = [], [], [], []
+    manual_accept, ft_xlim, ft_ylim, ft_level, ft_method = [], [], [], [], []
     with open(myfile, mode="r") as f_in:
         for line in f_in:
             li=line.strip()
@@ -177,10 +126,11 @@ def get_manual_select(myfile):
                 reader = li.split()            
                 manual_accept.append(reader[0])
                 ft_ylim.append([float(reader[1]), float(reader[2])])
-                ft_level.append([float(reader[3]), float(reader[4])])
-                ft_method.append(float(reader[5]))
+                ft_xlim.append([float(reader[3]), float(reader[4])])
+                ft_level.append(float(reader[5]))
+                ft_method.append(float(reader[6]))
     
-    return manual_accept, ft_ylim, ft_level, ft_method
+    return manual_accept, ft_xlim, ft_ylim, ft_level, ft_method
     
     
 
@@ -260,7 +210,7 @@ if use_all_clust == 'n':
     # Read file that stores the manually selected clusters and read their fine
     # tuning parameters.
     myfile = 'manual_selection_zams.dat'
-    zams_manual_accept, ft_z_ylim, ft_z_level, ft_z_method = \
+    zams_manual_accept, ft_z_xlim, ft_z_ylim, ft_z_level, ft_z_method = \
     get_manual_select(myfile)
 else:
     zams_manual_accept = []
@@ -269,7 +219,7 @@ else:
 # Read file that stores the manually selected clusters from which to obtain
 # an isochrone. Store their names and fine tuning parameters.
 myfile = 'manual_selection_isos.dat'
-iso_manual_accept, ft_i_ylim, ft_i_level, ft_i_method = \
+iso_manual_accept, ft_i_xlim, ft_i_ylim, ft_i_level, ft_i_method = \
 get_manual_select(myfile)
 
 
@@ -399,53 +349,21 @@ data_all/cumulos-datos-fotometricos/'
                 if cluster in zams_manual_accept and not flag_all:
                     indx = zams_manual_accept.index(cluster)
                     y_lim = ft_z_ylim[indx]
-                    lev_min, lev_num = ft_z_level[indx][0], ft_z_level[indx][1]
+                    x_lim = ft_z_xlim[indx]
+                    lev_num = ft_z_level[indx]
                 else:
                     y_lim = [-10., 10.]
-                    lev_min, lev_num = 0., 1.
+                    x_lim = [-10., 10.]
+                    lev_num = 01
                 
                 # Call the function that returns the sequence determined by
                 # the two points further from each other in each contour
                 # level and the function that returns the sequence determined by
                 # the stars inside the maximum contour level set.
-                seq_contour, seq_stars = clust_seqences(cluster, x, y,
-                                                        lev_min, lev_num, kde,
-                                                        cluster_region, kernel)
+                x_pol_trim, y_pol_trim, x_pol_trim_2, y_pol_trim_2 = \
+                clust_seqences(cluster, x, y, x_lim, y_lim, lev_num, kde,\
+                cluster_region, kernel)
 
-                # If the sequence is an empty list don't attempt to plot the
-                # polynomial fit.
-                if seq_contour[0]:
-                    # Obtain the sequence's fitting polinome.
-                    poli_order = 2 # Order of the polynome.
-                    poli = np.polyfit(seq_contour[1], seq_contour[0], poli_order)
-                    y_pol = np.linspace(min(seq_contour[1]),
-                                        max(seq_contour[1]), 50)
-                    p = np.poly1d(poli)
-                    x_pol = [p(i) for i in y_pol]
-
-                    # Trim the interpolated sequence to the range in y axis.
-                    y_pol_trim, x_pol_trim = zip(*[(ia,ib) for (ia, ib) in \
-                    zip(y_pol, x_pol) if y_lim[0] <= ia <= y_lim[1]])      
-                else:
-                    x_pol_trim, y_pol_trim = [], []
-
-                # If the sequence is an empty list don't attempt to
-                # plot the polynomial fit.
-                if seq_stars[0]:
-                    # Trim the interpolated sequence to the range in y axis.
-                    y_trim_2, x_trim_2 = zip(*[(ia,ib) for (ia, ib) in \
-                    zip(seq_stars[1], seq_stars[0]) if y_lim[0] <= ia <= y_lim[1]])                    
-                    
-                    # Obtain the sequence's fitting polinome.
-                    poli_order = 2 # Order of the polynome.
-                    poli = np.polyfit(y_trim_2, x_trim_2, poli_order)
-                    y_pol_trim_2 = np.linspace(min(y_trim_2), max(y_trim_2), 50)
-                    p = np.poly1d(poli)
-                    x_pol_trim_2 = [p(i) for i in y_pol_trim_2]
-                else:
-                    x_pol_trim_2, y_pol_trim_2 = [], []
-                    
-                    
                 # Write interpolating points to file and store in lists
                 # according to the method that was selected.
                 def_method = True
@@ -470,7 +388,6 @@ data_all/cumulos-datos-fotometricos/'
                             
                     # Write interpolated sequence to output file.
                     write_seq_file(out_dir, cluster, x_pol_sel, y_pol_sel)                     
-                    
             # If cluster is not to be processed.
             else:
                 x_pol_trim, y_pol_trim, x_pol_trim_2, y_pol_trim_2 = [], [], [],\
@@ -481,47 +398,15 @@ data_all/cumulos-datos-fotometricos/'
                 
                 indx = iso_manual_accept.index(cluster)
                 y_lim_iso = ft_i_ylim[indx]
-                lev_min_iso, lev_num_iso = ft_i_level[indx][0], ft_i_level[indx][1]
+                x_lim_iso = ft_i_xlim[indx]
+                lev_num_iso = ft_i_level[indx]
                 
                 # Call the function that returns the evolved part of the isochrone
                 # for this cluster.
-                isoch_seq_contour, isoch_seq_stars = clust_seqences(cluster, x,\
-                y, lev_min_iso, lev_num_iso, kde, cluster_region, kernel)
+                x_pol_trim_iso, y_pol_trim_iso, x_pol_trim_iso_2, \
+                y_pol_trim_iso_2 = clust_seqences(cluster, x, y, x_lim_iso, \
+                y_lim_iso, lev_num_iso, kde, cluster_region, kernel)
             
-            
-                # If the sequence is an empty list don't attempt to plot the
-                # polynomial fit.
-                if isoch_seq_contour[0]:
-                    # Obtain the sequence's fitting polinome.
-                    poli_order = 2 # Order of the polynome.
-                    poli = np.polyfit(isoch_seq_contour[1], isoch_seq_contour[0], poli_order)
-                    y_pol_iso = np.linspace(min(isoch_seq_contour[1]),
-                                        max(isoch_seq_contour[1]), 50)
-                    p = np.poly1d(poli)
-                    x_pol_iso = [p(i) for i in y_pol_iso]
-
-                    # Trim the interpolated sequence to the range in y axis.
-                    y_pol_trim_iso, x_pol_trim_iso = zip(*[(ia,ib) for (ia, ib) in \
-                    zip(y_pol_iso, x_pol_iso) if y_lim_iso[0] <= ia <= y_lim_iso[1]])      
-                else:
-                    x_pol_trim_iso, y_pol_trim_iso = [], []
-
-                # If the sequence is an empty list don't attempt to
-                # plot the polynomial fit.
-                if isoch_seq_stars[0]:
-                    # Trim the interpolated sequence to the range in y axis.
-                    y_trim_iso_2, x_trim_iso_2 = zip(*[(ia,ib) for (ia, ib) in \
-                    zip(isoch_seq_stars[1], isoch_seq_stars[0]) if y_lim_iso[0] <= ia <= y_lim_iso[1]])
-                    
-                    # Obtain the sequence's fitting polinome.
-                    poli_order = 2 # Order of the polynome.
-                    poli = np.polyfit(y_trim_iso_2, x_trim_iso_2, poli_order)
-                    y_pol_trim_iso_2 = np.linspace(min(y_trim_iso_2), max(y_trim_iso_2), 50)
-                    p = np.poly1d(poli)
-                    x_pol_trim_iso_2 = [p(i) for i in y_pol_trim_iso_2]
-                else:
-                    x_pol_trim_iso_2, y_pol_trim_iso_2 = [], []
-
                 # Write interpolating points to file and store in lists
                 # according to the method that was selected.
                 def_method = True
@@ -544,8 +429,7 @@ data_all/cumulos-datos-fotometricos/'
                                               cl_dmod])
                     # Write interpolated sequence to output file.
                     write_iso_file(out_dir, cluster, x_pol_sel, y_pol_sel)
-                      
-                    
+            # If cluster is not to be processed.
             else:
                 x_pol_trim_iso, y_pol_trim_iso, x_pol_trim_iso_2,\
                 y_pol_trim_iso_2 = [], [], [], []
