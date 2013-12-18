@@ -545,7 +545,8 @@ data_all/cumulos-datos-fotometricos/'
                       
                     
             else:
-                x_pol_trim_iso, y_pol_trim_iso = [], []
+                x_pol_trim_iso, y_pol_trim_iso, x_pol_trim_iso_2,\
+                y_pol_trim_iso_2 = [], [], [], []
         
         
             # Call function to create CMDs for this cluster.
@@ -557,7 +558,7 @@ data_all/cumulos-datos-fotometricos/'
                   col_intrsc, mag_intrsc, memb_above_lim,
                   zam_met, metals_feh, x_pol_trim, y_pol_trim, x_pol_trim_2,
                   y_pol_trim_2, def_method, x_pol_trim_iso, y_pol_trim_iso,
-                  out_dir)
+                  x_pol_trim_iso_2, y_pol_trim_iso_2, out_dir)
         
 
 

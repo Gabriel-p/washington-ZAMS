@@ -9,3 +9,4 @@
 # starts interpolating method.
 #
 #NAME  y_min y_max lev_min lev_num method
+BSDL716   0.   2.8      0.     -1.      0

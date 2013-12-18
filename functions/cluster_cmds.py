@@ -26,7 +26,8 @@ def make_cluster_cmds(sub_dir, cluster, col1_data, mag_data, stars_out_rjct,
                       mag_min_int, mag_max_int, min_prob, x, y, kde, col_intrsc,
                       mag_intrsc, memb_above_lim, zam_met, metals_feh, x_pol,
                       y_pol, x_pol_2, y_pol_2, def_method, x_pol_trim_iso,
-                      y_pol_trim_iso, out_dir):
+                      y_pol_trim_iso, x_pol_trim_iso_2, y_pol_trim_iso_2,
+                      out_dir):
 
 
     # Used when plotting all stars inside cluster radius with their
@@ -219,12 +220,13 @@ def make_cluster_cmds(sub_dir, cluster, col1_data, mag_data, stars_out_rjct,
     # Plot polynomial zams fit only if list is not empty.
     if x_pol:
         plt.plot(x_pol, y_pol, c='k', lw=2, zorder=6)
-    # Plot polynomial zams fit only if list is not empty.
     if x_pol_2:
-        plt.plot(x_pol_2, y_pol_2, c='r', lw=2, zorder=6)
+        plt.plot(x_pol_2, y_pol_2, c='b', lw=2, zorder=6)
     # Plot poly fit of traced isochrone.
     if x_pol_trim_iso:
-        plt.plot(x_pol_trim_iso, y_pol_trim_iso, 'b', lw=2, zorder=6)
+        plt.plot(x_pol_trim_iso, y_pol_trim_iso, 'k', lw=2, zorder=6)
+    if x_pol_trim_iso_2:
+        plt.plot(x_pol_trim_iso_2, y_pol_trim_iso_2, 'b', lw=2, zorder=6)
 
                  
 
