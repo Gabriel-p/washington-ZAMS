@@ -158,7 +158,7 @@ def make_cluster_cmds(sub_dir, cluster, col1_data, mag_data, stars_out_rjct,
     # Plot ZAMS.
     plt.plot(zams_iso[1], zams_iso[0], c='k', ls='--', lw=1.5, zorder=6)
     # Plot moved isochrone.
-    plt.plot(iso_moved[1], iso_moved[0], 'k', lw=2.)
+    plt.plot(iso_moved[1], iso_moved[0], 'k', lw=2., zorder=6)
     # Plot colorbar.
     cbaxes3 = fig.add_axes([0.4, 0.46, 0.07, 0.01])
     cbar3 = plt.colorbar(cax=cbaxes3, ticks=[v_min,v_max],
