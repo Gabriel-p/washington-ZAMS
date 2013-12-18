@@ -568,7 +568,7 @@ data_all/cumulos-datos-fotometricos/'
                 # plot the polynomial fit.
                 if sequence[0]:
                     # Obtain the sequence's fitting polinome.
-                    poli_order = 3 # Order of the polynome.
+                    poli_order = 2 # Order of the polynome.
                     poli = np.polyfit(sequence[1], sequence[0], poli_order)
                     y_pol = np.linspace(min(sequence[1]), max(sequence[1]), 50)
                     p = np.poly1d(poli)
@@ -579,8 +579,6 @@ data_all/cumulos-datos-fotometricos/'
                     zip(y_pol,x_pol) if y_lim[0] <= ia <= y_lim[1]])
                 else:
                     x_pol_trim_2, y_pol_trim_2 = [], []                
-                
-                
             else:
                 x_pol_trim_2, y_pol_trim_2 = [], []
             
