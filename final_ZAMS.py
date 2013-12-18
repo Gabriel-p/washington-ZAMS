@@ -143,9 +143,10 @@ def clust_main_seq(cluster, x, y, kde):
         
         
 def clust_main_seq_2(cluster, x, y, kde, cluster_region, kernel):
-    '''This is the central function. It generates the countour plots around the
-    cluster members and then makes use of those stars inside the maximum contour
-    allowed to trace the zams.
+    '''This is similar to the function that uses contours to trace the sequence,
+    but his one generates the countour plots around the cluster members and then
+    makes use of those stars inside the maximum contour allowed to trace the
+    zams instead of the diametral points in the contours themselves.
     '''
     
     try:
