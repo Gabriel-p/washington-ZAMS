@@ -24,9 +24,9 @@ def make_cluster_cmds(sub_dir, cluster, col1_data, mag_data, stars_out_rjct,
                       popt_mag, popt_col1, cl_e_bv, cl_age, cl_feh, cl_dmod,
                       iso_moved, iso_intrsc,zams_iso, col1_min_int, col1_max_int, 
                       mag_min_int, mag_max_int, min_prob, x, y, kde,
-                      manual_levels, col_intrsc, mag_intrsc, memb_above_lim,
-                      zam_met, metals_feh, x_pol, y_pol, x_pol_2, y_pol_2,
-                      x_pol_trim_iso, y_pol_trim_iso, out_dir):
+                      col_intrsc, mag_intrsc, memb_above_lim,
+                      zam_met, metals_feh, x_pol, y_pol, x_pol_trim_iso,
+                      y_pol_trim_iso, out_dir):
 
 
     # Used when plotting all stars inside cluster radius with their
@@ -209,19 +209,11 @@ def make_cluster_cmds(sub_dir, cluster, col1_data, mag_data, stars_out_rjct,
     # Plot intrinsic isochrone.
     plt.plot(iso_intrsc[1], iso_intrsc[0], 'k', lw=1.5, ls='--')
     # Plor contour levels.
-    if manual_levels.any():
-        CS = plt.contour(x, y, kde, manual_levels, zorder=5)
-    else:
-        CS = plt.contour(x, y, kde, zorder=5)
+    CS = plt.contour(x, y, kde, zorder=5)
     plt.clabel(CS, fontsize=11, inline=1, zorder=5)
     # Plot polynomial zams fit only if list is not empty.
     if x_pol:
         plt.plot(x_pol, y_pol, c='k', lw=2, zorder=6)
-        
-    # Plot polynomial zams fit only if list is not empty.
-    if x_pol_2:
-        plt.plot(x_pol_2, y_pol_2, c='r', lw=2, zorder=6)
-        
     # Plot poly fit of traced isochrone.
     if x_pol_trim_iso:
         plt.plot(x_pol_trim_iso, y_pol_trim_iso, 'b', lw=2, zorder=6)

@@ -34,12 +34,12 @@ from scipy.stats import norm
 
 
 # This list stores the clusters selected manually.
-#zams_manual_accept = [\
-#'BSDL654', 'BSDL761', 'BSDL779', 'C11', 'CZ26', 'CZ30', \
-#'HAF11', 'H88-188', 'H88-333', 'HS38', 'HS130', \
-#'KMHK1702','L49', 'L50', 'L72', 'L114', \
-#'LW469', 'NGC2236', 'NGC2324', 'RUP1', 'SL72', 'TO1']
-zams_manual_accept = []
+zams_manual_accept = [\
+'BSDL654', 'BSDL761', 'BSDL779', 'C11', 'CZ26', 'CZ30', \
+'HAF11', 'H88-188', 'H88-333', 'HS38', 'HS130', \
+'KMHK1702','L49', 'L50', 'L72', 'L114', \
+'LW469', 'NGC2236', 'NGC2324', 'RUP1', 'SL72', 'TO1']
+#zams_manual_accept = []
                    
 # These lists hold the fine tuning parameters for those clusters that need it
 # to accurately trace its zero age main sequences.
@@ -58,11 +58,11 @@ f_t_level = [\
 [-0.1, -1.], [-0.1, 0.], [-0.1, 1], [], [], [-0.1, 0.], \
 [-0.1, 1.], [], [-0.1, 2.], [], []]
 
-# Values to generate levels with np.arange()
-f_t_range = [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [],
-             [], [], [], [], [], [], []]
+# Select the method to use previous to the interpolation. 0 means contour
+# (used as default) and 1 means stars inside maximum contour level.
+f_t_method = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-fine_tune_zams = [f_t_ylim, f_t_level, f_t_range]
+fine_tune_zams = [f_t_ylim, f_t_level, f_t_method]
     
     
 #iso_manual_accept = ['L72', 'NGC294', 'B112', 'HW63', 'NGC1839', 'LW69', 'L50']
@@ -83,7 +83,7 @@ fine_tune_isoch = [isoch_ylim, isoch_level, isoch_range]
     
     
     
-def clust_main_seq(cluster, x, y, kde):
+def clust_main_seq_contour(cluster, x, y, kde):
     '''This is the central function. It generates the countour plots around the
     cluster members. The extreme points of these contour levels are used to trace
     the ZAMS fiducial line for each cluster.
@@ -91,14 +91,6 @@ def clust_main_seq(cluster, x, y, kde):
     
     try:
         indx = zams_manual_accept.index(cluster)
-        # Check if a range was set for this cluster to generate its density
-        # levels.
-        if fine_tune_zams[2][indx]:
-            manual_levels = np.arange(fine_tune_zams[2][indx][0],
-                                      fine_tune_zams[2][indx][1],\
-                                      fine_tune_zams[2][indx][2])
-        else:
-            manual_levels = np.array([])
         # Set interpolating range and contour levels to be acceoted.
         if fine_tune_zams[0][indx]:
             y_min, y_max = fine_tune_zams[0][indx][0], fine_tune_zams[0][indx][1]
@@ -107,7 +99,6 @@ def clust_main_seq(cluster, x, y, kde):
         lev_min, lev_num = fine_tune_zams[1][indx] if fine_tune_zams[1][indx] \
         else [-0.1, -1]
     except ValueError:
-        manual_levels = np.array([])
         y_min, y_max = -10., 10.
         lev_min, lev_num = [0., 1]
     
@@ -117,10 +108,7 @@ def clust_main_seq(cluster, x, y, kde):
     sequence = [[], []]
 
     # Store contour levels.
-    if manual_levels.any():
-        CS = plt.contour(x, y, kde, manual_levels)
-    else:
-        CS = plt.contour(x, y, kde)
+    CS = plt.contour(x, y, kde)
     # Store level values for contour levels.
     levels = CS.levels
     for i,clc in enumerate(CS.collections):
@@ -140,11 +128,11 @@ def clust_main_seq(cluster, x, y, kde):
 
     # Range in y axis for accepting interpolated values for the sequence.
     y_lim = [y_min, y_max]
-    return sequence, manual_levels, y_lim
+    return sequence, y_lim
           
         
         
-def clust_main_seq_2(cluster, x, y, kde, cluster_region, kernel):
+def clust_main_seq_stars(cluster, x, y, kde, cluster_region, kernel):
     '''This is similar to the function that uses contours to trace the sequence,
     but his one generates the countour plots around the cluster members and then
     makes use of those stars inside the maximum contour allowed to trace the
@@ -153,14 +141,6 @@ def clust_main_seq_2(cluster, x, y, kde, cluster_region, kernel):
     
     try:
         indx = zams_manual_accept.index(cluster)
-        # Check if a range was set for this cluster to generate its density
-        # levels.
-        if fine_tune_zams[2][indx]:
-            manual_levels = np.arange(fine_tune_zams[2][indx][0],
-                                      fine_tune_zams[2][indx][1],\
-                                      fine_tune_zams[2][indx][2])
-        else:
-            manual_levels = np.array([])
         # Set interpolating range and contour levels to be acceoted.
         if fine_tune_zams[0][indx]:
             y_min, y_max = fine_tune_zams[0][indx][0], fine_tune_zams[0][indx][1]
@@ -169,15 +149,11 @@ def clust_main_seq_2(cluster, x, y, kde, cluster_region, kernel):
         lev_min, lev_num = fine_tune_zams[1][indx] if fine_tune_zams[1][indx] \
         else [-0.1, -1]
     except ValueError:
-        manual_levels = np.array([])
         y_min, y_max = -10., 10.
         lev_min, lev_num = [0., 1]
     
     # Store contour levels.
-    if manual_levels.any():
-        CS = plt.contour(x, y, kde, manual_levels)
-    else:
-        CS = plt.contour(x, y, kde)
+    CS = plt.contour(x, y, kde)
     # Store level values for contour levels.
     levels = CS.levels
         
@@ -195,7 +171,7 @@ def clust_main_seq_2(cluster, x, y, kde, cluster_region, kernel):
 
     # Range in y axis for accepting interpolated values for the sequence.
     y_lim = [y_min, y_max]
-    return sequence, manual_levels, y_lim        
+    return sequence, y_lim        
         
         
            
@@ -207,12 +183,6 @@ def get_isoch_seq(cluster, x, y, kde):
     if cluster in iso_manual_accept:
     
         indx = iso_manual_accept.index(cluster)
-        if fine_tune_isoch[2][indx]:
-            manual_levels = np.arange(fine_tune_isoch[2][indx][0],
-                                      fine_tune_isoch[2][indx][1],\
-                                      fine_tune_isoch[2][indx][2])
-        else:
-            manual_levels = np.array([])
         if fine_tune_isoch[0][indx]:
             y_min, y_max = fine_tune_isoch[0][indx][0], fine_tune_isoch[0][indx][1]
         else:
@@ -227,10 +197,7 @@ def get_isoch_seq(cluster, x, y, kde):
         isoch_seq = [[], []]
     
         # Store contour levels.
-        if manual_levels.any():
-            CS = plt.contour(x, y, kde, manual_levels)
-        else:
-            CS = plt.contour(x, y, kde)
+        CS = plt.contour(x, y, kde)
         # Store level values for contour levels.
         levels = CS.levels
         for i,clc in enumerate(CS.collections):
@@ -529,13 +496,30 @@ data_all/cumulos-datos-fotometricos/'
             kde = np.reshape(kernel(positions).T, x.shape)
             
             if cluster in zams_manual_accept or flag_all:
-                # Call the function that returns the sequence determined by the two
-                # points further from each other in each contour level.
-                sequence, manual_levels, y_lim = clust_main_seq(cluster,
-                                                                x, y, kde)
+                
+                # Use the selected method for obtaining the points that trace
+                # the sequencefor this cluster.
+                default_method = True
+                if cluster in zams_manual_accept:
+                    indx = zams_manual_accept.index(cluster)
+                    if fine_tune_zams[2][indx] != 0:
+                        default_method = False
+                        
+                if default_method:
+                    # Call the function that returns the sequence determined by
+                    # the two points further from each other in each contour
+                    # level.
+                    sequence, y_lim = clust_main_seq_contour(cluster, x, y, kde)              
+                else:
+                    cluster_region = zip(*[col_intrsc, mag_intrsc])
+                    # Call the function that returns the sequence determined by
+                    # the stars inside the maximum contour level set.
+                    sequence, y_lim = clust_main_seq_stars(cluster, x, y, kde,
+                                                           cluster_region,
+                                                           kernel)  
 
-                # If the contour points returns an empty list don't attempt to
-                # plot the polynomial fit.
+                # If the sequence is an empty list don't attempt to plot the
+                # polynomial fit.
                 if sequence[0]:
 
                     # Trim the interpolated sequence to the range in y axis.
@@ -555,36 +539,35 @@ data_all/cumulos-datos-fotometricos/'
                     # Also store the parameters associated with this cluster.
                     clust_zams_params.append([cluster, cl_e_bv, cl_age, cl_feh,
                                               cl_dmod])
+
+                    # Write interpolated sequence to output file.
+                    write_seq_file(out_dir, cluster, x_pol_trim, y_pol_trim)                                              
                 else:
                     x_pol_trim, y_pol_trim = [], []
     
-                # Write interpolated sequence to output file.
-                write_seq_file(out_dir, cluster, x_pol_trim, y_pol_trim)
-                
-                
-                cluster_region = zip(*[col_intrsc, mag_intrsc])
-                # Call the function that returns the sequence determined by the two
-                # points further from each other in each contour level.
-                sequence, manual_levels, y_lim = clust_main_seq_2(cluster,\
-                x, y, kde, cluster_region, kernel)
-                # If the contour points returns an empty list don't attempt to
-                # plot the polynomial fit.
-                if sequence[0]:
-
-                    # Trim the interpolated sequence to the range in y axis.
-                    y_trim_2, x_trim_2 = zip(*[(ia,ib) for (ia, ib) in \
-                    zip(sequence[1], sequence[0]) if y_lim[0] <= ia <= y_lim[1]])                    
-                    
-                    # Obtain the sequence's fitting polinome.
-                    poli_order = 2 # Order of the polynome.
-                    poli = np.polyfit(y_trim_2, x_trim_2, poli_order)
-                    y_pol_trim_2 = np.linspace(min(y_trim_2), max(y_trim_2), 50)
-                    p = np.poly1d(poli)
-                    x_pol_trim_2 = [p(i) for i in y_pol_trim_2]
-                else:
-                    x_pol_trim_2, y_pol_trim_2 = [], []                
+#                cluster_region = zip(*[col_intrsc, mag_intrsc])
+#                # Call the function that returns the sequence determined by the two
+#                # points further from each other in each contour level.
+#                sequence, manual_levels, y_lim = clust_main_seq_2(cluster,\
+#                x, y, kde, cluster_region, kernel)
+#                # If the contour points returns an empty list don't attempt to
+#                # plot the polynomial fit.
+#                if sequence[0]:
+#
+#                    # Trim the interpolated sequence to the range in y axis.
+#                    y_trim_2, x_trim_2 = zip(*[(ia,ib) for (ia, ib) in \
+#                    zip(sequence[1], sequence[0]) if y_lim[0] <= ia <= y_lim[1]])                    
+#                    
+#                    # Obtain the sequence's fitting polinome.
+#                    poli_order = 2 # Order of the polynome.
+#                    poli = np.polyfit(y_trim_2, x_trim_2, poli_order)
+#                    y_pol_trim_2 = np.linspace(min(y_trim_2), max(y_trim_2), 50)
+#                    p = np.poly1d(poli)
+#                    x_pol_trim_2 = [p(i) for i in y_pol_trim_2]
+#                else:
+#                    x_pol_trim_2, y_pol_trim_2 = [], []                
             else:
-                x_pol_trim_2, y_pol_trim_2 = [], []
+                x_pol_trim, y_pol_trim = [], []
             
             
             if cluster in iso_manual_accept or flag_all:
@@ -629,9 +612,9 @@ data_all/cumulos-datos-fotometricos/'
                   popt_mag, popt_col1, cl_e_bv, cl_age, cl_feh, cl_dmod,
                   iso_moved, iso_intrsc, zams_iso, col1_min_int, col1_max_int, 
                   mag_min_int, mag_max_int, min_prob, x, y, kde,
-                  manual_levels, col_intrsc, mag_intrsc, memb_above_lim,
-                  zam_met, metals_feh, x_pol_trim, y_pol_trim, x_pol_trim_2,
-                  y_pol_trim_2, x_pol_trim_iso, y_pol_trim_iso, out_dir)
+                  col_intrsc, mag_intrsc, memb_above_lim,
+                  zam_met, metals_feh, x_pol_trim, y_pol_trim, x_pol_trim_iso,
+                  y_pol_trim_iso, out_dir)
         
 
 
