@@ -50,7 +50,7 @@ zams_manual_accept = [\
 f_t_ylim = [\
 [0.5, 3.2], [1., 2.6], [1.6, 4.], [1.4, 4.], [3.2, 5.2], [3., 4.8], \
 [2.2, 5.], [1.8, 2.7], [2., 4.], [2., 3.], [1., 3.4], \
-[2., 4.], [-0.3, 1.2], [0.8, 1.8], [-1., 0.8], [1.6, 2.8], [2., 3.2], \
+[2., 4.], [-0.3, 1.2], [0.8, 2.2], [-1., 0.8], [1.6, 2.8], [2., 3.2], \
 [2., 4.5], [1.8, 5.], [2., 6.4], [1., 2.8], [2.8, 4.4]]
 
 # min level value to accept and min level number to accept.
@@ -67,18 +67,18 @@ f_t_range = [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [],
 fine_tune_zams = [f_t_ylim, f_t_level, f_t_range]
     
     
-iso_manual_accept = ['L72', 'NGC294', 'B112', 'HW63', 'NGC1839', 'LW69']
+iso_manual_accept = ['L72', 'NGC294', 'B112', 'HW63', 'NGC1839', 'LW69', 'L50']
 
 # These lists hold the names and tuning parameters for those clusters used to
 # trace isochrones.
 
 isoch_ylim = [\
-[-4., -0.6], [-0.8, 1.8], [0.8, 3.], [2., 3.3], [-2., 1.4], [1., 2.8]]
+[-4., -0.6], [-0.8, 1.8], [0.8, 3.], [2., 3.3], [-2., 1.4], [1., 2.8], [-3., 0.6]]
 
 isoch_level = [\
-[], [], [-0.1, 0.],[], [-0.1, 0.], []]
+[], [], [-0.1, 0.],[], [-0.1, 0.], [], []]
 
-isoch_range = [[], [], [], [], [], []]
+isoch_range = [[], [], [], [], [], [], []]
 
 fine_tune_isoch = [isoch_ylim, isoch_level, isoch_range]
     
@@ -631,35 +631,32 @@ def metal_isoch(clust_isoch, clust_isoch_params, zx_pol, zy_pol, m_rang):
     
     # Interpolate points close to the final ZAMS so as to smooth the section
     # were they intersect.
-#    for isoch in clust_isoch_met:
-#        x3, y3 = [], []
-#        for indx,y2_i in enumerate(isoch[1]):
-#            if (isoch[1][-1]-y2_i)<=0.2:
-#                y3.append(y2_i)
-#                x3.append(isoch[0][indx])
-#                
-#        for indx,y1_i in enumerate(zy_pol):
-#            if 0. <(y1_i-isoch[1][-1])<=0.4 and zx_pol[indx] > isoch[0][-1]:
-#                y3.append(y1_i)
-#                x3.append(zx_pol[indx])
-#        
-#        poli_order = 4 # Order of the polynome.
-#        poli = np.polyfit(y3, x3, poli_order)
-#        y_pol = np.linspace(min(y3), max(y3), 50)
-#        p = np.poly1d(poli)
-#        x_pol = [p(i) for i in y_pol]
-#        
-#        # Find point where the interpolated connecting segment intersects
-#        # the ZAMS.
-#        for pt in y_pol:
-#            dist = np.sqrt()
+    clust_isoch_met_z = []
+    for isoch in clust_isoch_met:
         
-    
+        # Iterate though ZAMS points ordered in increasing order in y.
+        for indx,y1_i in enumerate(zy_pol):
+            if 0. <(y1_i-isoch[1][-1])<=0.4 and zx_pol[indx] > isoch[0][-1]:
+                y3 = [y1_i]
+                x3 = [zx_pol[indx]]
+                break
+       
+        from scipy.interpolate import spline
+        sx = np.array(isoch[0]+x3)
+        sy = np.array(isoch[1].tolist()+y3)
+        t  = np.arange(sx.size,dtype=float)
+        t /= t[-1]
+        N  = np.linspace(0,1,1000)
+        SX = spline(t,sx,N,order=2)
+        SY = spline(t,sy,N,order=2)
+        
+        # Append interpolated isochrone.
+        clust_isoch_met_z.append([SX.tolist(), SY.tolist()])
     
     # Sort all lists according to age.
     if iso_ages:
         iso_ages_s, clust_isoch_met_s, clust_isoch_params_met_s = \
-        map(list, zip(*sorted(zip(iso_ages, clust_isoch_met,
+        map(list, zip(*sorted(zip(iso_ages, clust_isoch_met_z,
                                   clust_isoch_params_met), reverse=True)))
     else:
         iso_ages_s, clust_isoch_met_s, clust_isoch_params_met_s = [], [], []
