@@ -59,7 +59,7 @@ def clust_seqences(cluster, x, y, lev_min, lev_num, kde, cluster_region, kernel)
             # Only store points that belong to contour PDF values larger
             # than lev_min and that belong to the uper curves, ie: do not
             # use those with index <= lev_num.
-            if levels[i] > lev_min and i > lev_num:
+            if levels[i] >= lev_min and i >= lev_num:
                 # Only store points within these limits.
                     seq_contour[0].append(round(x_c[0],4))
                     seq_contour[1].append(round(y_c[0],4))
@@ -74,7 +74,7 @@ def clust_seqences(cluster, x, y, lev_min, lev_num, kde, cluster_region, kernel)
         kde_star = kernel((star[0], star[1]))
         for i,clc in enumerate(CS.collections):
             # Only use stars inside the allowed max contour and min level value.
-            if levels[i] > lev_min and i > lev_num:
+            if levels[i] >= lev_min and i >= lev_num:
                 if kde_star >= levels[i]:
                     # Only store stars within these limits.
                     seq_stars[0].append(star[0])
@@ -402,7 +402,7 @@ data_all/cumulos-datos-fotometricos/'
                     lev_min, lev_num = ft_z_level[indx][0], ft_z_level[indx][1]
                 else:
                     y_lim = [-10., 10.]
-                    lev_min, lev_num = 0., 0.
+                    lev_min, lev_num = 0., 1.
                 
                 # Call the function that returns the sequence determined by
                 # the two points further from each other in each contour
