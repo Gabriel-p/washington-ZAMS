@@ -39,9 +39,6 @@ zams_manual_accept = [\
 'HAF11', 'H88-188', 'H88-333', 'HS38', 'HS130', \
 'KMHK1702','L49', 'L50', 'L72', 'L114', \
 'LW469', 'NGC2236', 'NGC2324', 'RUP1', 'SL72', 'TO1']
-
-#zams_manual_accept = [\
-#'BSDL654', 'BSDL761', 'BSDL779']
                    
 # These lists hold the fine tuning parameters for those clusters that need it
 # to accurately trace its zero age main sequences.
