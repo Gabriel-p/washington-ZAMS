@@ -567,7 +567,7 @@ data_all/cumulos-datos-fotometricos/'
 
 def final_zams(clust_zams, clust_zams_params, m_rang, indx_met):
     '''
-    Takes several cluster sequences and joins them into a sinclge ZAMS through
+    Takes several cluster sequences and joins them into a single ZAMS through
     interpolation.
     '''
     
