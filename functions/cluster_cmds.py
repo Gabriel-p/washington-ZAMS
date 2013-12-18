@@ -25,8 +25,8 @@ def make_cluster_cmds(sub_dir, cluster, col1_data, mag_data, stars_out_rjct,
                       iso_moved, iso_intrsc,zams_iso, col1_min_int, col1_max_int, 
                       mag_min_int, mag_max_int, min_prob, x, y, kde,
                       manual_levels, col_intrsc, mag_intrsc, memb_above_lim,
-                      zam_met, x_pol, y_pol, x_pol_trim_iso, y_pol_trim_iso,
-                      out_dir):
+                      zam_met, metals_feh, x_pol, y_pol, x_pol_trim_iso,
+                      y_pol_trim_iso, out_dir):
 
 
     # Used when plotting all stars inside cluster radius with their
@@ -200,10 +200,12 @@ def make_cluster_cmds(sub_dir, cluster, col1_data, mag_data, stars_out_rjct,
     # Plot colored stars.
     plt.scatter(temp_inv[0], temp_inv[1], marker='o', c=temp_inv[2],
                 s=100, cmap=cm, lw=0.8, vmin=v_min, vmax=v_max, zorder=2)
-    # Plot ZAMS envelope.
-    a = [0, -1]
-    for j in a:
-        plt.plot(zam_met[j][3], zam_met[j][2], c='g', ls='--') 
+    # Plot theoretical ZAMS of same metallicity.
+    try:
+      j = metals_feh.index(cl_feh)
+    except ValueError: 
+      j = min(range(len(metals_feh)), key=lambda i: abs(metals_feh[i]-cl_feh))
+    plt.plot(zam_met[j][3], zam_met[j][2], c='g', lw=2., ls='--') 
     # Plot intrinsic isochrone.
     plt.plot(iso_intrsc[1], iso_intrsc[0], 'k', lw=1.5, ls='--')
     # Plor contour levels.

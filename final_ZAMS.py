@@ -368,11 +368,11 @@ for indx, sub_dir in enumerate(sub_dirs):
     else:
         if cluster in zams_manual_accept or cluster in iso_manual_accept:
             run_cluster = True
-            print sub_dir, cluster
         else:
             run_cluster = False
         
     if run_cluster:
+        print sub_dir, cluster
         # Location of the photometric data file for each cluster.
         data_phot = '/media/rest/Dropbox/GABRIEL/CARRERA/3-POS-DOC/trabajo/\
 data_all/cumulos-datos-fotometricos/'        
@@ -544,7 +544,7 @@ data_all/cumulos-datos-fotometricos/'
                   iso_moved, iso_intrsc, zams_iso, col1_min_int, col1_max_int, 
                   mag_min_int, mag_max_int, min_prob, x, y, kde,
                   manual_levels, col_intrsc, mag_intrsc, memb_above_lim,
-                  zam_met, x_pol_trim, y_pol_trim, x_pol_trim_iso,
+                  zam_met, metals_feh, x_pol_trim, y_pol_trim, x_pol_trim_iso,
                   y_pol_trim_iso, out_dir)
         
 
