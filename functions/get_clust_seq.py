@@ -24,8 +24,9 @@ def clust_seqences(cluster, x, y, x_lim, y_lim, lev_num, kde, cluster_region,
     # the y coordinates.
     contour_seq = [[], []]
 
+    levels_range = np.arange(0.05,1.01,0.05)
     # Store contour levels.
-    CS = plt.contour(x, y, kde)
+    CS = plt.contour(x, y, kde, levels_range)
     
     for i,clc in enumerate(CS.collections):
         for j,pth in enumerate(clc.get_paths()):

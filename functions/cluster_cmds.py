@@ -215,7 +215,8 @@ def make_cluster_cmds(sub_dir, cluster, col1_data, mag_data, stars_out_rjct,
     # Plot intrinsic isochrone.
     plt.plot(iso_intrsc[1], iso_intrsc[0], 'k', lw=1.5, ls='--')
     # Plor contour levels.
-    CS = plt.contour(x, y, kde, zorder=5)
+    levels_range = np.arange(0.05,1.01,0.05)
+    CS = plt.contour(x, y, kde, levels_range, zorder=5)
     plt.clabel(CS, fontsize=11, inline=1, zorder=5)
     # Plot polynomial zams fit only if list is not empty.
     if x_pol:
