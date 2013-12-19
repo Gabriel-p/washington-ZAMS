@@ -354,7 +354,7 @@ data_all/cumulos-datos-fotometricos/'
                 else:
                     y_lim = [-10., 10.]
                     x_lim = [-10., 10.]
-                    lev_num = 01
+                    lev_num = 1
                 
                 # Call the function that returns the sequence determined by
                 # the two points further from each other in each contour
