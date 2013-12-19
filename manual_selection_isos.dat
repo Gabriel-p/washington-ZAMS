@@ -1,0 +1,22 @@
+# This list holds the fine tuning parameters for those clusters that
+# were manually selected to trace the isochrone sequences.
+#
+# * NAME: name of the hand-picked cluster.
+# * lev_num: minimum number of contour level to be accepted. The levels
+# start from 0 which is assigned to the outermost one.
+# * method: 0 is the default contour's diametral pair method and 1 is the
+# stars interpolating method.
+# * y_min, y_max: Magnitude range where the sequences will be interpolated.
+# * x_min, x_max: Color range where the sequences will be interpolated.
+#
+#NAME  lev_num  method  y_min  y_max  x_min  x_max
+#AM3          0       0    1.4     4.0  -9.0    9.0
+#B34          2       0    1.0     2.2  -9.0    9.0
+#B47          2       0    0.4     1.8  -0.2    0.8
+#B112         2       0    0.6     2.7  -9.0    9.0
+#BRHT4B       2       0   -3.0     0.2  -9.0    0.2
+#BS35         5       0   -9.0     9.0  -9.0    9.0
+#BS88         1       0    1.2     9.0  -9.0    9.0
+#BS265        2       1    0.2     2.8  -9.0    0.5
+#BSDL594      1       0    1.0     3.6  -9.0    9.0
+BSDL654      1       0   -0.4    2.2   -9.0    9.0

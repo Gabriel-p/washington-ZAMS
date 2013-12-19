@@ -1,0 +1,13 @@
+# This list holds the fine tuning parameters for those clusters that
+# were manually selected to trace the ZAMS.
+#
+# * NAME: name of the hand-picked cluster.
+# * lev_num: minimum number of contour level to be accepted. The levels
+# start from 0 which is assigned to the outermost one.
+# * method: 0 is the default contour's diametral pair method and 1 is the
+# stars interpolating method.
+# * y_min, y_max: Magnitude range where the sequences will be interpolated.
+# * x_min, x_max: Color range where the sequences will be interpolated.
+#
+#NAME  lev_num  method  y_min  y_max  x_min  x_max
+BSDL654      5       0    2.2    3.4   -9.0    9.0
