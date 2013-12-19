@@ -186,10 +186,7 @@ def make_cluster_cmds(sub_dir, cluster, col1_data, mag_data, stars_out_rjct,
     plt.text(0.7, 0.83, text, transform = ax4.transAxes,
              bbox=dict(facecolor='white', alpha=0.5), fontsize=24)
     text1 = r'$P_{lim}=%0.2f$' '\n' % min_prob
-    if def_method:
-        text2 = r'$method:\, contour$'
-    else:
-        text2 = r'$method:\, stars$'
+    text2 = r'$method-1$' if def_method else r'$method-2$'
     text = text1 + text2
     plt.text(0.05, 0.9, text, transform=ax4.transAxes,
              bbox=dict(facecolor='white', alpha=0.5), fontsize=24)
