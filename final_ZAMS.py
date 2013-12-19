@@ -125,10 +125,10 @@ def get_manual_select(myfile):
             if not li.startswith("#"):
                 reader = li.split()            
                 manual_accept.append(reader[0])
-                ft_ylim.append([float(reader[1]), float(reader[2])])
-                ft_xlim.append([float(reader[3]), float(reader[4])])
-                ft_level.append(float(reader[5]))
-                ft_method.append(float(reader[6]))
+                ft_level.append(float(reader[1]))
+                ft_method.append(float(reader[2]))
+                ft_ylim.append([float(reader[3]), float(reader[4])])
+                ft_xlim.append([float(reader[5]), float(reader[6])])
     
     return manual_accept, ft_xlim, ft_ylim, ft_level, ft_method
     
