@@ -393,7 +393,7 @@ data_all/cumulos-datos-fotometricos/'
                 x_pol_trim, y_pol_trim, x_pol_trim_2, y_pol_trim_2 = [], [], [],\
                 []
             
-            
+            # Get isochrone sequence if applicable.
             if cluster in iso_manual_accept and not flag_all:
                 
                 indx = iso_manual_accept.index(cluster)
